@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('安全中心', 'Security Center') }}{% endblock %}
+{% block content %}
+<div class="two-col" style="margin-top:20px;">
+  <div class="card">
+    <div class="section-title">{{ tr('双重验证 (2FA)', 'Two-Factor Authentication') }}</div>
+    <p class="muted">{{ tr('将以下密钥添加到验证器应用中，然后输入验证码启用。', 'Add the following secret to your authenticator app, then enter a code to enable it.') }}</p>
+    <div style="margin:14px 0;padding:12px;border:1px dashed #ccc;border-radius:10px;font-family:monospace;word-break:break-all;">{{ user.two_factor_secret }}</div>
+    <div class="muted" style="margin-bottom:16px;">{{ otpauth_uri }}</div>
+    <form method="POST">
+      <input type="hidden" name="action" value="enable"/>
+      <div class="form-group"><label>{{ tr('验证码', 'Verification Code') }}</label><input type="text" name="code"/></div>
+      <button type="submit" class="btn btn-primary">{{ tr('启用 2FA', 'Enable 2FA') }}</button>
+    </form>
+  </div>
+  <div class="card">
+    <div class="section-title">{{ tr('管理 2FA', 'Manage 2FA') }}</div>
+    <p class="muted">{{ tr('当前状态：', 'Current status:') }} <strong>{{ tr('已启用', 'Enabled') if user.two_factor_enabled else tr('未启用', 'Disabled') }}</strong></p>
+    <form method="POST" style="margin-top:12px;"><input type="hidden" name="action" value="disable"/><button type="submit" class="btn btn-light">{{ tr('关闭 2FA', 'Disable 2FA') }}</button></form>
+    <form method="POST" style="margin-top:12px;"><input type="hidden" name="action" value="regenerate"/><button type="submit" class="btn btn-secondary">{{ tr('重新生成密钥', 'Regenerate Secret') }}</button></form>
+  </div>
+</div>
+{% endblock %}

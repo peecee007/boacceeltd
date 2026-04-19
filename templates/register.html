@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('开户注册', 'Open Account') }}{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-head">
+      <h2>{{ tr('在线开户注册', 'Open an Account Online') }}</h2>
+      <p>{{ tr('支持个人账户与企业账户', 'Supports personal and corporate accounts') }}</p>
+    </div>
+    <div class="auth-body">
+      <form method="POST">
+        <div class="form-group"><label>{{ tr('姓名 / 企业名称', 'Full Name / Company Name') }}</label><input type="text" name="full_name" value="{{ form.get('full_name','') }}" required/></div>
+        <div class="form-grid">
+          <div class="form-group"><label>{{ tr('邮箱', 'Email') }}</label><input type="email" name="email" value="{{ form.get('email','') }}" required/></div>
+          <div class="form-group"><label>{{ tr('联系电话', 'Phone') }}</label><input type="text" name="phone" value="{{ form.get('phone','') }}"/></div>
+        </div>
+        <div class="form-group"><label>{{ tr('联系地址', 'Address') }}</label><input type="text" name="address" value="{{ form.get('address','') }}"/></div>
+        <div class="form-grid">
+          <div class="form-group"><label>{{ tr('账户类型', 'Account Type') }}</label><select name="account_type"><option value="personal" {{ 'selected' if form.get('account_type','personal') == 'personal' }}>{{ tr('个人账户', 'Personal') }}</option><option value="corporate" {{ 'selected' if form.get('account_type') == 'corporate' }}>{{ tr('企业账户', 'Corporate') }}</option></select></div>
+          <div class="form-group"><label>{{ tr('主币种', 'Primary Currency') }}</label><select name="currency">{% for currency in currencies %}<option value="{{ currency }}" {{ 'selected' if form.get('currency','HUF') == currency }}>{{ currency }}</option>{% endfor %}</select></div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group"><label>{{ tr('界面语言', 'Interface Language') }}</label><select name="preferred_lang"><option value="zh" {{ 'selected' if form.get('preferred_lang', current_lang) == 'zh' }}>中文</option><option value="en" {{ 'selected' if form.get('preferred_lang') == 'en' }}>English</option></select></div>
+          <div class="form-group"><label>{{ tr('密码', 'Password') }}</label><input type="password" name="password" required/></div>
+        </div>
+        <div class="form-group"><label>{{ tr('确认密码', 'Confirm Password') }}</label><input type="password" name="confirm_password" required/></div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">{{ tr('创建账户', 'Create Account') }}</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

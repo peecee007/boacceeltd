@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('贷款申请', 'Loan Application') }}{% endblock %}
+{% block content %}
+<div class="two-col" style="margin-top:20px;">
+  <div class="card">
+    <div class="section-title">{{ tr('提交贷款申请', 'Submit a Loan Application') }}</div>
+    <form method="POST">
+      <div class="form-grid">
+        <div class="form-group"><label>{{ tr('申请金额', 'Amount') }}</label><input type="number" step="0.01" name="amount" value="{{ form.get('amount','') }}" required/></div>
+        <div class="form-group"><label>{{ tr('期限（月）', 'Term (months)') }}</label><input type="number" name="term_months" value="{{ form.get('term_months','') }}" required/></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>{{ tr('年利率 (%)', 'Annual Rate (%)') }}</label><input type="number" step="0.01" name="annual_rate" value="{{ form.get('annual_rate','') }}" required/></div>
+        <div class="form-group"><label>{{ tr('月收入', 'Monthly Income') }}</label><input type="number" step="0.01" name="monthly_income" value="{{ form.get('monthly_income','') }}"/></div>
+      </div>
+      <div class="form-group"><label>{{ tr('用途说明', 'Purpose') }}</label><textarea name="purpose" rows="4">{{ form.get('purpose','') }}</textarea></div>
+      <button type="submit" class="btn btn-primary">{{ tr('提交申请', 'Submit Application') }}</button>
+    </form>
+  </div>
+  <div class="card">
+    <div class="section-title">{{ tr('历史申请', 'Previous Applications') }}</div>
+    <table class="table">
+      <thead><tr><th>{{ tr('时间', 'Date') }}</th><th>{{ tr('金额', 'Amount') }}</th><th>{{ tr('状态', 'Status') }}</th></tr></thead>
+      <tbody>
+      {% for loan in loans %}
+        <tr><td>{{ loan.created_at.strftime('%Y-%m-%d') }}</td><td>{{ "{:,.2f}".format(loan.amount) }}</td><td>{{ loan.status }}</td></tr>
+      {% else %}
+        <tr><td colspan="3">{{ tr('暂无申请。', 'No applications yet.') }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

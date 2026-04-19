@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('用户管理', 'Users') }}{% endblock %}
+{% block content %}
+<div class="admin-hero"><h1>{{ tr('用户管理', 'User Management') }}</h1><div class="admin-nav"><a href="{{ url_for('admin_dashboard') }}">{{ tr('后台首页', 'Dashboard') }}</a><a class="active" href="{{ url_for('admin_users') }}">{{ tr('用户管理', 'Users') }}</a><a href="{{ url_for('admin_create_user') }}">{{ tr('新建用户', 'New User') }}</a></div></div>
+<div class="card">
+  <form method="GET" class="form-grid" style="margin-bottom:16px;">
+    <div class="form-group"><label>{{ tr('搜索', 'Search') }}</label><input type="text" name="q" value="{{ q }}" placeholder="{{ tr('姓名、邮箱、账号', 'Name, email, account number') }}"/></div>
+    <div class="form-group"><label>{{ tr('筛选', 'Filter') }}</label><select name="filter"><option value="all" {{ 'selected' if filter=='all' }}>{{ tr('全部', 'All') }}</option><option value="active" {{ 'selected' if filter=='active' }}>{{ tr('正常', 'Active') }}</option><option value="frozen" {{ 'selected' if filter=='frozen' }}>{{ tr('冻结', 'Frozen') }}</option><option value="inactive" {{ 'selected' if filter=='inactive' }}>{{ tr('停用', 'Inactive') }}</option></select></div>
+    <div style="display:flex;align-items:end;gap:8px;"><button class="btn btn-primary" type="submit">{{ tr('搜索', 'Search') }}</button><a class="btn btn-light" href="{{ url_for('admin_users') }}">{{ tr('重置', 'Reset') }}</a></div>
+  </form>
+  <table class="table">
+    <thead><tr><th>#</th><th>{{ tr('姓名', 'Name') }}</th><th>{{ tr('类型', 'Type') }}</th><th>{{ tr('主币种', 'Primary Currency') }}</th><th>{{ tr('状态', 'Status') }}</th><th>{{ tr('操作', 'Actions') }}</th></tr></thead>
+    <tbody>
+    {% for u in users %}
+      <tr><td>{{ u.id }}</td><td>{{ u.full_name }}<br/><span class="muted">{{ u.email }}</span></td><td>{{ u.account_type }}</td><td>{{ u.currency }}</td><td>{% if u.is_frozen %}<span class="badge badge-red">{{ tr('冻结', 'Frozen') }}</span>{% elif u.is_active %}<span class="badge badge-green">{{ tr('正常', 'Active') }}</span>{% else %}<span class="badge badge-grey">{{ tr('停用', 'Inactive') }}</span>{% endif %}</td><td><a href="{{ url_for('admin_user_detail', uid=u.id) }}">{{ tr('查看', 'View') }}</a> · <a href="{{ url_for('admin_user_edit', uid=u.id) }}">{{ tr('编辑', 'Edit') }}</a></td></tr>
+    {% else %}
+      <tr><td colspan="6">{{ tr('暂无用户。', 'No users found.') }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('管理后台', 'Admin Dashboard') }}{% endblock %}
+{% block content %}
+<div class="admin-hero">
+  <h1>{{ tr('管理控制台', 'Admin Console') }}</h1>
+  <p class="muted">{{ tr('集中查看用户、交易、贷款和 KYC 审核。', 'Review users, transactions, loans, and KYC in one place.') }}</p>
+  <div class="admin-nav">
+    <a class="active" href="{{ url_for('admin_dashboard') }}">{{ tr('后台首页', 'Dashboard') }}</a>
+    <a href="{{ url_for('admin_users') }}">{{ tr('用户管理', 'Users') }}</a>
+    <a href="{{ url_for('admin_transactions') }}">{{ tr('交易记录', 'Transactions') }}</a>
+    <a href="{{ url_for('admin_loans') }}">{{ tr('贷款申请', 'Loans') }}</a>
+    <a href="{{ url_for('admin_kyc') }}">{{ tr('KYC 审核', 'KYC') }}</a>
+    <a href="{{ url_for('admin_logs') }}">{{ tr('登录日志', 'Logs') }}</a>
+  </div>
+</div>
+<section class="stats-grid">
+  <div class="stat-card"><h3>{{ tr('用户总数', 'Total Users') }}</h3><div style="font-size:28px;font-weight:700;">{{ total_users }}</div></div>
+  <div class="stat-card"><h3>{{ tr('活跃用户', 'Active Users') }}</h3><div style="font-size:28px;font-weight:700;">{{ active_users }}</div></div>
+  <div class="stat-card"><h3>{{ tr('冻结账户', 'Frozen Accounts') }}</h3><div style="font-size:28px;font-weight:700;">{{ frozen_users }}</div></div>
+  <div class="stat-card"><h3>{{ tr('交易总数', 'Total Transactions') }}</h3><div style="font-size:28px;font-weight:700;">{{ total_txns }}</div></div>
+</section>
+<section class="admin-grid" style="margin-top:16px;">
+  <div class="card"><div class="section-title">{{ tr('最新用户', 'Recent Users') }}</div><ul class="list">{% for u in recent_users %}<li><a href="{{ url_for('admin_user_detail', uid=u.id) }}">{{ u.full_name }}</a><br/><span class="muted">{{ u.email }}</span></li>{% else %}<li>{{ tr('暂无数据。', 'No data yet.') }}</li>{% endfor %}</ul></div>
+  <div class="card"><div class="section-title">{{ tr('最近登录', 'Recent Logins') }}</div><ul class="list">{% for log in recent_logs %}<li>{{ log.user.full_name if log.user else '-' }} · {{ log.ip_address }} · {{ log.timestamp.strftime('%m-%d %H:%M') }}</li>{% else %}<li>{{ tr('暂无日志。', 'No logs yet.') }}</li>{% endfor %}</ul></div>
+</section>
+<section class="admin-grid" style="margin-top:16px;">
+  <div class="card"><div class="section-title">{{ tr('最新贷款申请', 'Recent Loans') }}</div><ul class="list">{% for loan in recent_loans %}<li>{{ loan.user.full_name if loan.user else '-' }} · {{ "{:,.2f}".format(loan.amount) }} · {{ loan.status }}</li>{% else %}<li>{{ tr('暂无申请。', 'No applications yet.') }}</li>{% endfor %}</ul></div>
+  <div class="card"><div class="section-title">{{ tr('最新 KYC 文件', 'Recent KYC Documents') }}</div><ul class="list">{% for doc in recent_kyc %}<li>{{ doc.user.full_name if doc.user else '-' }} · {{ doc.filename }} · {{ doc.status }}</li>{% else %}<li>{{ tr('暂无文件。', 'No documents yet.') }}</li>{% endfor %}</ul></div>
+</section>
+{% endblock %}

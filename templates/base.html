@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>{% block title %}{{ tr('博安中东欧银行', 'BOAC CEE Bank') }}{% endblock %}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"Microsoft YaHei","PingFang SC","Segoe UI",sans-serif;font-size:14px;color:#333;background:#f5f6f7;}
+a{color:#8b0000;text-decoration:none;}a:hover{color:#c40000;}
+.top-strip{background:#c40000;height:2px;}
+.container{width:min(1200px,94vw);margin:0 auto;}
+.header,.main-nav,.card,.flash,.panel,.sidebar-card,.admin-hero,.footer-main{background:#fff;}
+.header{border-bottom:1px solid #e5e5e5;}
+.header-inner{display:flex;justify-content:space-between;align-items:center;padding:14px 0;gap:16px;}
+.logo-area{display:flex;align-items:center;gap:12px;}
+.logo-circle{width:54px;height:54px;border-radius:50%;background:#c40000;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1.2;text-align:center;}
+.logo-main{font-size:20px;font-weight:700;color:#222;}
+.logo-sub{font-size:11px;color:#888;}
+.header-right{text-align:right;font-size:12px;color:#555;}
+.lang-switch{display:flex;justify-content:flex-end;gap:8px;align-items:center;margin-bottom:6px;}
+.lang-pill{padding:4px 10px;border:1px solid #ddd;border-radius:999px;background:#fff;}
+.lang-pill.active{background:#c40000;color:#fff;border-color:#c40000;}
+.auth-links{display:flex;gap:8px;justify-content:flex-end;align-items:center;flex-wrap:wrap;}
+.btn{display:inline-block;padding:8px 14px;border-radius:6px;font-size:13px;font-weight:600;border:none;cursor:pointer;}
+.btn-primary{background:#c40000;color:#fff;}
+.btn-secondary{background:#333;color:#fff;}
+.btn-light{border:1px solid #ddd;background:#fff;color:#333;}
+.btn-success{background:#e8f5e9;color:#2e7d32;}
+.btn-danger{background:#ffebee;color:#c62828;}
+.nav-list{display:flex;list-style:none;gap:0;overflow:auto;}
+.nav-list li a{display:block;padding:14px 16px;color:#333;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap;}
+.nav-list li a:hover,.nav-list li.active a{color:#c40000;border-bottom-color:#c40000;}
+.flash-wrap{margin-top:12px;}
+.flash{padding:12px 14px;border-radius:8px;margin-bottom:8px;border:1px solid transparent;}
+.flash.success{background:#e8f5e9;border-color:#c8e6c9;color:#2e7d32;}
+.flash.error{background:#ffebee;border-color:#ffcdd2;color:#c62828;}
+.flash.warning{background:#fff8e1;border-color:#ffe082;color:#f57f17;}
+.flash.info{background:#e3f2fd;border-color:#bbdefb;color:#1565c0;}
+.layout{display:grid;grid-template-columns:1fr 280px;gap:20px;margin:20px auto 32px;}
+.card,.panel,.sidebar-card{border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+.card{padding:18px;}
+.section-title{font-size:16px;font-weight:700;margin-bottom:12px;color:#222;}
+.hero{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-top:20px;}
+.hero-banner{background:linear-gradient(135deg,#7a0000,#cf3b2f);color:#fff;border-radius:16px;padding:28px;min-height:240px;display:flex;flex-direction:column;justify-content:center;}
+.hero-banner h1{font-size:30px;margin-bottom:10px;}
+.hero-banner p{font-size:14px;line-height:1.7;max-width:520px;}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
+.feature-grid,.stats-grid,.dashboard-grid,.admin-grid,.two-col{display:grid;gap:16px;}
+.feature-grid{grid-template-columns:repeat(3,1fr);margin-top:18px;}
+.dashboard-grid{grid-template-columns:repeat(3,1fr);margin-bottom:18px;}
+.admin-grid,.two-col{grid-template-columns:1fr 1fr;}
+.stats-grid{grid-template-columns:repeat(4,1fr);}
+.feature-card,.stat-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+.feature-card h3,.stat-card h3{font-size:15px;margin-bottom:8px;color:#222;}
+.feature-card p,.muted{color:#777;line-height:1.6;}
+.list{list-style:none;}
+.list li{padding:10px 0;border-bottom:1px solid #f0f0f0;}
+.list li:last-child{border-bottom:none;}
+.table{width:100%;border-collapse:collapse;}
+.table th,.table td{padding:10px 12px;border-bottom:1px solid #f0f0f0;text-align:left;font-size:13px;vertical-align:top;}
+.table th{background:#f7f7f7;color:#555;}
+.badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;}
+.badge-green{background:#e8f5e9;color:#2e7d32;}
+.badge-red{background:#ffebee;color:#c62828;}
+.badge-blue{background:#e3f2fd;color:#1565c0;}
+.badge-grey{background:#f5f5f5;color:#666;}
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;margin-bottom:5px;font-size:12.5px;font-weight:600;color:#444;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font:inherit;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.auth-wrap{min-height:calc(100vh - 220px);display:flex;align-items:center;justify-content:center;padding:32px 0;}
+.auth-card{width:min(620px,94vw);background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.08);overflow:hidden;}
+.auth-head{background:linear-gradient(135deg,#b51212,#df5349);color:#fff;padding:26px;text-align:center;}
+.auth-body{padding:24px;}
+.sidebar-stack{display:grid;gap:16px;}
+.admin-hero{border-radius:14px;padding:20px;margin:20px auto;}
+.admin-nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.admin-nav a{padding:8px 12px;border-radius:999px;background:#f3f3f3;color:#333;font-size:12px;font-weight:700;}
+.admin-nav a.active,.admin-nav a:hover{background:#c40000;color:#fff;}
+.footer-main{margin-top:24px;padding:18px 0;border-top:1px solid #e5e5e5;}
+.footer-row{display:flex;justify-content:space-between;gap:16px;align-items:center;}
+@media (max-width: 980px){
+  .layout,.hero,.feature-grid,.dashboard-grid,.stats-grid,.admin-grid,.two-col,.form-grid{grid-template-columns:1fr;}
+  .header-inner,.footer-row{flex-direction:column;align-items:flex-start;}
+  .header-right{text-align:left;width:100%;}
+  .lang-switch,.auth-links{justify-content:flex-start;}
+}
+</style>
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+<div class="top-strip"></div>
+<header class="header">
+  <div class="container header-inner">
+    <div class="logo-area">
+      <div class="logo-circle">BOAC<br/>CEE<br/>BANK</div>
+      <div>
+        <div class="logo-main">{{ tr('博安中东欧银行', 'BOAC CEE Bank') }}</div>
+        <div class="logo-sub">{{ tr('个人与企业一体化网上银行平台', 'Integrated personal and corporate online banking platform') }}</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="lang-switch">
+        <span class="muted">{{ tr('语言', 'Language') }}:</span>
+        <a class="lang-pill {% if current_lang == 'zh' %}active{% endif %}" href="{{ url_for('set_language', lang='zh', next=request.full_path) }}">中文</a>
+        <a class="lang-pill {% if current_lang == 'en' %}active{% endif %}" href="{{ url_for('set_language', lang='en', next=request.full_path) }}">English</a>
+      </div>
+      <div class="auth-links">
+        <span>{{ tr('客服热线', 'Hotline') }}: <strong>0036-14299252</strong></span>
+        {% if session.user_id %}
+          <a class="btn btn-light" href="{{ url_for('dashboard') }}">{{ tr('账户中心', 'Dashboard') }}</a>
+          {% if session.is_admin %}<a class="btn btn-secondary" href="{{ url_for('admin_dashboard') }}">{{ tr('管理后台', 'Admin') }}</a>{% endif %}
+          <a class="btn btn-light" href="{{ url_for('logout') }}">{{ tr('退出', 'Logout') }}</a>
+        {% else %}
+          <a class="btn btn-light" href="{{ url_for('login') }}">{{ tr('登录', 'Login') }}</a>
+          <a class="btn btn-primary" href="{{ url_for('register') }}">{{ tr('开户注册', 'Open Account') }}</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</header>
+<nav class="main-nav">
+  <div class="container">
+    <ul class="nav-list">
+      <li class="{% if request.endpoint == 'index' %}active{% endif %}"><a href="{{ url_for('index') }}">{{ tr('首页', 'Home') }}</a></li>
+      <li class="{% if request.endpoint == 'register' %}active{% endif %}"><a href="{{ url_for('register') }}">{{ tr('开户注册', 'Open Account') }}</a></li>
+      <li class="{% if request.endpoint in ['login','online_banking'] %}active{% endif %}"><a href="{{ url_for('online_banking') }}">{{ tr('网上银行', 'Online Banking') }}</a></li>
+      <li class="{% if request.endpoint == 'personal_banking' %}active{% endif %}"><a href="{{ url_for('personal_banking') }}">{{ tr('个人金融', 'Personal Banking') }}</a></li>
+      <li class="{% if request.endpoint == 'corporate_banking' %}active{% endif %}"><a href="{{ url_for('corporate_banking') }}">{{ tr('公司金融', 'Corporate Banking') }}</a></li>
+      <li class="{% if request.endpoint == 'customer_service' %}active{% endif %}"><a href="{{ url_for('customer_service') }}">{{ tr('客户服务', 'Customer Service') }}</a></li>
+      <li class="{% if request.endpoint == 'about_us' %}active{% endif %}"><a href="{{ url_for('about_us') }}">{{ tr('关于我们', 'About Us') }}</a></li>
+      <li class="{% if request.endpoint == 'interest_calculator' %}active{% endif %}"><a href="{{ url_for('interest_calculator') }}">{{ tr('利息计算器', 'Interest Calculator') }}</a></li>
+      {% if session.user_id %}
+        <li class="{% if request.endpoint == 'transfer_funds' %}active{% endif %}"><a href="{{ url_for('transfer_funds') }}">{{ tr('转账汇款', 'Transfers') }}</a></li>
+        <li class="{% if request.endpoint == 'international_remittance' %}active{% endif %}"><a href="{{ url_for('international_remittance') }}">{{ tr('国际汇款', 'International Remittance') }}</a></li>
+        <li class="{% if request.endpoint == 'loan_application' %}active{% endif %}"><a href="{{ url_for('loan_application') }}">{{ tr('贷款申请', 'Loan Application') }}</a></li>
+        <li class="{% if request.endpoint == 'kyc_upload' %}active{% endif %}"><a href="{{ url_for('kyc_upload') }}">{{ tr('KYC 上传', 'KYC Upload') }}</a></li>
+        <li class="{% if request.endpoint == 'security' %}active{% endif %}"><a href="{{ url_for('security') }}">{{ tr('安全中心', 'Security') }}</a></li>
+        <li class="{% if request.endpoint == 'settings' %}active{% endif %}"><a href="{{ url_for('settings') }}">{{ tr('设置', 'Settings') }}</a></li>
+      {% endif %}
+      {% if session.is_admin %}
+        <li class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}"><a href="{{ url_for('admin_dashboard') }}">{{ tr('后台首页', 'Admin Home') }}</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-wrap">
+        {% for cat, msg in messages %}
+          <div class="flash {{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="footer-main">
+  <div class="container footer-row">
+    <div>{{ tr('博安中东欧银行 · 支持中文与英文切换', 'BOAC CEE Bank · Supports Chinese and English switching') }}</div>
+    <div>
+      <a href="{{ url_for('index') }}">{{ tr('首页', 'Home') }}</a>
+      <a href="{{ url_for('register') }}" style="margin-left:12px;">{{ tr('开户注册', 'Open Account') }}</a>
+      <a href="{{ url_for('personal_banking') }}" style="margin-left:12px;">{{ tr('个人金融', 'Personal Banking') }}</a>
+      <a href="{{ url_for('corporate_banking') }}" style="margin-left:12px;">{{ tr('公司金融', 'Corporate Banking') }}</a>
+      <a href="{{ url_for('customer_service') }}" style="margin-left:12px;">{{ tr('客户服务', 'Customer Service') }}</a>
+    </div>
+  </div>
+</footer>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

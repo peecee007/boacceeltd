@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('账户中心', 'Dashboard') }}{% endblock %}
+{% block content %}
+<section class="hero" style="grid-template-columns:1fr;">
+  <div class="hero-banner">
+    <h1>{{ tr('欢迎', 'Welcome') }} {{ user.full_name }}</h1>
+    <p>{{ tr('您当前的主账户类型为', 'Your current primary account type is') }} {{ tr('个人账户', 'Personal Account') if user.account_type == 'personal' else tr('企业账户', 'Corporate Account') }}，{{ tr('主币种为', 'with primary currency') }} {{ user.currency }}。</p>
+    <div class="hero-actions">
+      <a class="btn btn-light" href="{{ url_for('export_transactions_pdf') }}">{{ tr('导出交易 PDF', 'Export Transactions PDF') }}</a>
+      <a class="btn btn-light" href="{{ url_for('transfer_funds') }}">{{ tr('发起转账', 'Transfer Funds') }}</a>
+      <a class="btn btn-light" href="{{ url_for('international_remittance') }}">{{ tr('国际汇款', 'International Remittance') }}</a>
+      <a class="btn btn-light" href="{{ url_for('loan_application') }}">{{ tr('贷款申请', 'Loan Application') }}</a>
+      <a class="btn btn-light" href="{{ url_for('kyc_upload') }}">{{ tr('KYC 上传', 'KYC Upload') }}</a>
+      <a class="btn btn-light" href="{{ url_for('security') }}">{{ tr('安全中心', 'Security Center') }}</a>
+    </div>
+  </div>
+</section>
+
+<section class="dashboard-grid">
+  <div class="stat-card"><h3>{{ tr('主账户余额', 'Primary Balance') }}</h3><div style="font-size:26px;font-weight:700;">{{ "{:,.2f}".format(user.balance) }} {{ user.currency }}</div></div>
+  <div class="stat-card"><h3>{{ tr('KYC 状态', 'KYC Status') }}</h3><div style="font-size:22px;font-weight:700;">{{ user.kyc_status }}</div></div>
+  <div class="stat-card"><h3>{{ tr('2FA 状态', '2FA Status') }}</h3><div style="font-size:22px;font-weight:700;">{{ tr('已启用', 'Enabled') if user.two_factor_enabled else tr('未启用', 'Disabled') }}</div></div>
+</section>
+
+<section class="two-col">
+  <div class="card">
+    <div class="section-title">{{ tr('多币种余额', 'Multi-currency Balances') }}</div>
+    <table class="table">
+      <thead><tr><th>{{ tr('币种', 'Currency') }}</th><th>{{ tr('余额', 'Balance') }}</th></tr></thead>
+      <tbody>
+      {% for wallet in wallets %}
+        <tr><td>{{ wallet.currency }}</td><td>{{ "{:,.2f}".format(wallet.amount) }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="section-title">{{ tr('最近交易', 'Recent Transactions') }}</div>
+    <table class="table">
+      <thead><tr><th>{{ tr('日期', 'Date') }}</th><th>{{ tr('类型', 'Type') }}</th><th>{{ tr('金额', 'Amount') }}</th></tr></thead>
+      <tbody>
+      {% for txn in txns %}
+        <tr><td>{{ txn.created_at.strftime('%Y-%m-%d') }}</td><td>{{ txn.channel }} / {{ txn.status }}</td><td>{{ "{:,.2f}".format(txn.amount) }} {{ txn.currency }}</td></tr>
+      {% else %}
+        <tr><td colspan="3">{{ tr('暂无交易记录。', 'No transactions yet.') }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="two-col" style="margin-top:16px;">
+  <div class="card">
+    <div class="section-title">{{ tr('通知', 'Notifications') }}</div>
+    <ul class="list">
+      {% for note in notifications %}
+        <li><strong>{{ note.subject }}</strong><br/><span class="muted">{{ note.message }}</span></li>
+      {% else %}
+        <li>{{ tr('暂无通知。', 'No notifications yet.') }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="card">
+    <div class="section-title">{{ tr('贷款与 KYC', 'Loans and KYC') }}</div>
+    <ul class="list">
+      <li>{{ tr('最近贷款申请数', 'Recent loan applications') }}: {{ loans|length }}</li>
+      <li>{{ tr('已上传 KYC 文件数', 'Uploaded KYC documents') }}: {{ docs|length }}</li>
+      <li><a href="{{ url_for('settings') }}">{{ tr('账户偏好设置', 'Account preferences') }}</a></li>
+      <li><a href="{{ url_for('interest_calculator') }}">{{ tr('利息计算器', 'Interest Calculator') }}</a></li>
+    </ul>
+  </div>
+</section>
+{% endblock %}

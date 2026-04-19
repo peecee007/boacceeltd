@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('国际汇款', 'International Remittance') if remittance else tr('转账申请', 'Transfer Request') }}{% endblock %}
+{% block content %}
+<div class="two-col" style="margin-top:20px;">
+  <div class="card">
+    <div class="section-title">{{ tr('国际汇款申请', 'International Remittance Request') if remittance else tr('本地转账申请', 'Local Transfer Request') }}</div>
+    <form method="POST">
+      <div class="form-grid">
+        <div class="form-group"><label>{{ tr('金额', 'Amount') }}</label><input type="number" step="0.01" name="amount" value="{{ form.get('amount','') }}" required/></div>
+        <div class="form-group"><label>{{ tr('币种', 'Currency') }}</label><select name="currency">{% for wallet in wallets %}<option value="{{ wallet.currency }}" {{ 'selected' if form.get('currency', user.currency) == wallet.currency }}>{{ wallet.currency }}</option>{% endfor %}</select></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>{{ tr('收款人名称', 'Beneficiary Name') }}</label><input type="text" name="beneficiary_name" value="{{ form.get('beneficiary_name','') }}" required/></div>
+        <div class="form-group"><label>{{ tr('收款账号', 'Beneficiary Account') }}</label><input type="text" name="beneficiary_account" value="{{ form.get('beneficiary_account','') }}" required/></div>
+      </div>
+      {% if remittance %}
+      <div class="form-grid">
+        <div class="form-group"><label>{{ tr('收款银行', 'Destination Bank') }}</label><input type="text" name="destination_bank" value="{{ form.get('destination_bank','') }}" required/></div>
+        <div class="form-group"><label>{{ tr('收款国家', 'Destination Country') }}</label><input type="text" name="destination_country" value="{{ form.get('destination_country','') }}" required/></div>
+      </div>
+      <div class="form-group"><label>{{ tr('SWIFT 代码', 'SWIFT Code') }}</label><input type="text" name="swift_code" value="{{ form.get('swift_code','') }}" required/></div>
+      {% endif %}
+      <div class="form-group"><label>{{ tr('附言 / 说明', 'Reference / Description') }}</label><textarea name="description" rows="4">{{ form.get('description','') }}</textarea></div>
+      <button type="submit" class="btn btn-primary">{{ tr('提交申请', 'Submit Request') }}</button>
+    </form>
+  </div>
+  <div class="card">
+    <div class="section-title">{{ tr('审批说明', 'Approval Notes') }}</div>
+    <ul class="list">
+      <li>{{ tr('所有用户发起的转账与国际汇款均为待审批状态。', 'All user-initiated transfers and international remittances remain pending until approved.') }}</li>
+      <li>{{ tr('管理员在后台交易记录页批准后才会真正扣减余额。', 'Balances are only debited once an admin approves the request in the transaction console.') }}</li>
+      <li>{{ tr('国际汇款需提供银行、国家与 SWIFT 信息。', 'International remittance requires bank, country, and SWIFT details.') }}</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

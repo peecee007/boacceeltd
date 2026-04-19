@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('编辑用户', 'Edit User') }}{% endblock %}
+{% block content %}
+<div class="card" style="margin-top:20px;">
+  <div class="section-title">{{ tr('编辑用户资料', 'Edit User Profile') }}</div>
+  <form method="POST">
+    <div class="form-grid">
+      <div class="form-group"><label>{{ tr('姓名', 'Full Name') }}</label><input type="text" name="full_name" value="{{ user.full_name }}" required/></div>
+      <div class="form-group"><label>{{ tr('邮箱', 'Email') }}</label><input type="email" name="email" value="{{ user.email }}" required/></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>{{ tr('电话', 'Phone') }}</label><input type="text" name="phone" value="{{ user.phone }}"/></div>
+      <div class="form-group"><label>{{ tr('地址', 'Address') }}</label><input type="text" name="address" value="{{ user.address }}"/></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>{{ tr('账户类型', 'Account Type') }}</label><select name="account_type"><option value="personal" {{ 'selected' if user.account_type == 'personal' }}>{{ tr('个人账户', 'Personal') }}</option><option value="corporate" {{ 'selected' if user.account_type == 'corporate' }}>{{ tr('企业账户', 'Corporate') }}</option></select></div>
+      <div class="form-group"><label>{{ tr('主币种', 'Primary Currency') }}</label><select name="currency">{% for currency in currencies %}<option value="{{ currency }}" {{ 'selected' if user.currency == currency }}>{{ currency }}</option>{% endfor %}</select></div>
+    </div>
+    <div class="form-group"><label>{{ tr('备注', 'Notes') }}</label><textarea name="notes" rows="3">{{ user.notes }}</textarea></div>
+    <div class="form-group"><label>{{ tr('新密码（留空则不修改）', 'New Password (leave blank to keep current)') }}</label><input type="password" name="new_password"/></div>
+    <button type="submit" class="btn btn-primary">{{ tr('保存修改', 'Save Changes') }}</button>
+  </form>
+</div>
+{% endblock %}

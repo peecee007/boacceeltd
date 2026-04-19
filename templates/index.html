@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('首页', 'Home') }}{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-banner">
+    <h1>{{ tr('中东欧数字银行门户', 'Central and Eastern Europe digital banking portal') }}</h1>
+    <p>{{ tr('本平台结合网上银行、个人金融、公司金融、客户服务与关于我们等栏目，并新增转账、国际汇款、贷款申请、KYC 上传、双重验证和多币种支持。', 'This platform combines online banking, personal banking, corporate banking, customer service, and about-us sections, with added transfers, international remittance, loan applications, KYC upload, two-factor authentication, and multi-currency support.') }}</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="{{ url_for('register') }}">{{ tr('立即开户', 'Open an Account') }}</a>
+      <a class="btn btn-light" href="{{ url_for('online_banking') }}">{{ tr('进入网上银行', 'Explore Online Banking') }}</a>
+      <a class="btn btn-light" href="{{ url_for('customer_service') }}">{{ tr('客户服务', 'Customer Service') }}</a>
+    </div>
+  </div>
+  <div class="card">
+    <div class="section-title">{{ tr('新增栏目', 'Added Sections') }}</div>
+    <ul class="list">
+      <li><a href="{{ url_for('online_banking') }}">{{ tr('网上银行', 'Online Banking') }}</a></li>
+      <li><a href="{{ url_for('personal_banking') }}">{{ tr('个人金融', 'Personal Banking') }}</a></li>
+      <li><a href="{{ url_for('corporate_banking') }}">{{ tr('公司金融', 'Corporate Banking') }}</a></li>
+      <li><a href="{{ url_for('customer_service') }}">{{ tr('客户服务', 'Customer Service') }}</a></li>
+      <li><a href="{{ url_for('about_us') }}">{{ tr('关于我们', 'About Us') }}</a></li>
+    </ul>
+  </div>
+</section>
+
+<section class="feature-grid">
+  <div class="feature-card"><h3>{{ tr('本地转账', 'Local transfers') }}</h3><p>{{ tr('登录用户可提交本地转账申请，由管理员审核后执行。', 'Signed-in users can submit local transfer requests that are executed only after admin approval.') }}</p></div>
+  <div class="feature-card"><h3>{{ tr('国际汇款', 'International remittance') }}</h3><p>{{ tr('支持填写收款人、银行、国家与 SWIFT 信息并提交汇款申请。', 'Supports remittance requests with beneficiary, bank, country, and SWIFT details.') }}</p></div>
+  <div class="feature-card"><h3>{{ tr('交易审批控制', 'Transaction approval control') }}</h3><p>{{ tr('所有用户发起的转账和汇款交易均在管理员后台控制。', 'All user-initiated transfers and remittances are controlled from the admin console.') }}</p></div>
+  <div class="feature-card"><h3>{{ tr('个人金融工具', 'Personal banking tools') }}</h3><p>{{ tr('包括账户中心、贷款申请、利息计算器与 KYC 文件上传。', 'Includes the dashboard, loan applications, interest calculator, and KYC uploads.') }}</p></div>
+  <div class="feature-card"><h3>{{ tr('公司金融功能', 'Corporate banking features') }}</h3><p>{{ tr('适用于企业账户、多币种余额与跨境付款申请流程。', 'Suitable for corporate accounts, multi-currency balances, and cross-border payment request flows.') }}</p></div>
+  <div class="feature-card"><h3>{{ tr('安全与通知', 'Security and notifications') }}</h3><p>{{ tr('提供登录提醒邮件、站内通知与双重验证。', 'Provides login alerts, in-app notifications, and two-factor authentication.') }}</p></div>
+</section>
+
+<section class="layout" style="grid-template-columns:1fr 320px;">
+  <div class="card">
+    <div class="section-title">{{ tr('快速入口', 'Quick Access') }}</div>
+    <ul class="list">
+      <li><a href="{{ url_for('personal_banking') }}">{{ tr('查看个人金融服务', 'View personal banking services') }}</a></li>
+      <li><a href="{{ url_for('corporate_banking') }}">{{ tr('查看公司金融服务', 'View corporate banking services') }}</a></li>
+      <li><a href="{{ url_for('customer_service') }}">{{ tr('查看客户服务栏目', 'Open customer service section') }}</a></li>
+      <li><a href="{{ url_for('about_us') }}">{{ tr('查看关于我们', 'Open about us') }}</a></li>
+      <li><a href="{{ url_for('interest_calculator') }}">{{ tr('使用利息计算器', 'Use the interest calculator') }}</a></li>
+      {% if session.user_id %}
+      <li><a href="{{ url_for('transfer_funds') }}">{{ tr('发起本地转账申请', 'Submit a local transfer request') }}</a></li>
+      <li><a href="{{ url_for('international_remittance') }}">{{ tr('发起国际汇款申请', 'Submit an international remittance request') }}</a></li>
+      {% endif %}
+    </ul>
+  </div>
+  <div class="sidebar-stack">
+    <div class="sidebar-card card">
+      <div class="section-title">{{ tr('网上银行', 'Online Banking') }}</div>
+      <p class="muted">{{ tr('统一入口整合登录、账户中心、安全设置与导出能力。', 'A unified entry combines sign-in, dashboard, security settings, and export tools.') }}</p>
+      <div style="margin-top:12px;"><a class="btn btn-primary" href="{{ url_for('online_banking') }}">{{ tr('查看栏目', 'View Section') }}</a></div>
+    </div>
+    <div class="sidebar-card card">
+      <div class="section-title">{{ tr('管理员后台', 'Admin Console') }}</div>
+      <p class="muted">{{ tr('管理员可审核交易、贷款申请与 KYC 文件。', 'Admins can review transactions, loan applications, and KYC documents.') }}</p>
+      <div style="margin-top:12px;"><a class="btn btn-light" href="{{ url_for('admin_dashboard') if session.is_admin else url_for('login') }}">{{ tr('进入后台', 'Open Admin') }}</a></div>
+    </div>
+  </div>
+</section>
+{% endblock %}

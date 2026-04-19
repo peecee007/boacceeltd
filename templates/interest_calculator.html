@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('利息计算器', 'Interest Calculator') }}{% endblock %}
+{% block content %}
+<div class="two-col" style="margin-top:20px;">
+  <div class="card">
+    <div class="section-title">{{ tr('贷款利息计算器', 'Loan Interest Calculator') }}</div>
+    <form method="POST">
+      <div class="form-grid">
+        <div class="form-group"><label>{{ tr('本金', 'Principal') }}</label><input type="number" step="0.01" name="principal" value="{{ form.get('principal','') }}" required/></div>
+        <div class="form-group"><label>{{ tr('年利率 (%)', 'Annual Rate (%)') }}</label><input type="number" step="0.01" name="annual_rate" value="{{ form.get('annual_rate','') }}" required/></div>
+      </div>
+      <div class="form-group"><label>{{ tr('期限（月）', 'Term (months)') }}</label><input type="number" name="term_months" value="{{ form.get('term_months','') }}" required/></div>
+      <button type="submit" class="btn btn-primary">{{ tr('开始计算', 'Calculate') }}</button>
+    </form>
+  </div>
+  <div class="card">
+    <div class="section-title">{{ tr('计算结果', 'Calculation Result') }}</div>
+    {% if result %}
+      <ul class="list">
+        <li>{{ tr('每月还款', 'Monthly Payment') }}: {{ "{:,.2f}".format(result.monthly_payment) }}</li>
+        <li>{{ tr('总还款额', 'Total Payment') }}: {{ "{:,.2f}".format(result.total_payment) }}</li>
+        <li>{{ tr('总利息', 'Total Interest') }}: {{ "{:,.2f}".format(result.total_interest) }}</li>
+      </ul>
+    {% else %}
+      <p class="muted">{{ tr('填写参数后即可查看估算结果。', 'Fill in the form to see estimated results.') }}</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

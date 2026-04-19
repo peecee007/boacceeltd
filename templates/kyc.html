@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('KYC 上传', 'KYC Upload') }}{% endblock %}
+{% block content %}
+<div class="two-col" style="margin-top:20px;">
+  <div class="card">
+    <div class="section-title">{{ tr('上传身份 / 合规文件', 'Upload Identity / Compliance Documents') }}</div>
+    <form method="POST" enctype="multipart/form-data">
+      <div class="form-group"><label>{{ tr('选择文件', 'Choose File') }}</label><input type="file" name="document" accept=".pdf,.png,.jpg,.jpeg" required/></div>
+      <button type="submit" class="btn btn-primary">{{ tr('上传文件', 'Upload Document') }}</button>
+    </form>
+  </div>
+  <div class="card">
+    <div class="section-title">{{ tr('已上传文件', 'Uploaded Documents') }}</div>
+    <table class="table">
+      <thead><tr><th>{{ tr('文件名', 'Filename') }}</th><th>{{ tr('状态', 'Status') }}</th><th>{{ tr('时间', 'Uploaded At') }}</th></tr></thead>
+      <tbody>
+      {% for doc in docs %}
+        <tr><td>{{ doc.filename }}</td><td>{{ doc.status }}</td><td>{{ doc.created_at.strftime('%Y-%m-%d %H:%M') }}</td></tr>
+      {% else %}
+        <tr><td colspan="3">{{ tr('暂无上传记录。', 'No uploads yet.') }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

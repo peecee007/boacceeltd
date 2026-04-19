@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('用户详情', 'User Detail') }}{% endblock %}
+{% block content %}
+<div class="admin-hero"><h1>{{ user.full_name }}</h1><p class="muted">{{ user.email }} · {{ user.account_no }}</p><div class="admin-nav"><a href="{{ url_for('admin_users') }}">{{ tr('返回用户列表', 'Back to Users') }}</a><a href="{{ url_for('admin_user_edit', uid=user.id) }}">{{ tr('编辑资料', 'Edit User') }}</a></div></div>
+<div class="two-col">
+  <div class="card">
+    <div class="section-title">{{ tr('账户信息', 'Account Information') }}</div>
+    <table class="table">
+      <tr><th>{{ tr('账户类型', 'Account Type') }}</th><td>{{ user.account_type }}</td></tr>
+      <tr><th>{{ tr('主币种', 'Primary Currency') }}</th><td>{{ user.currency }}</td></tr>
+      <tr><th>{{ tr('KYC 状态', 'KYC Status') }}</th><td>{{ user.kyc_status }}</td></tr>
+      <tr><th>{{ tr('2FA', '2FA') }}</th><td>{{ tr('已启用', 'Enabled') if user.two_factor_enabled else tr('未启用', 'Disabled') }}</td></tr>
+    </table>
+    <div class="section-title" style="margin-top:18px;">{{ tr('多币种钱包', 'Currency Wallets') }}</div>
+    <table class="table"><thead><tr><th>{{ tr('币种', 'Currency') }}</th><th>{{ tr('余额', 'Balance') }}</th></tr></thead><tbody>{% for wallet in wallets %}<tr><td>{{ wallet.currency }}</td><td>{{ "{:,.2f}".format(wallet.amount) }}</td></tr>{% endfor %}</tbody></table>
+  </div>
+  <div class="card">
+    <div class="section-title">{{ tr('账户操作', 'Account Actions') }}</div>
+    <form method="POST" action="{{ url_for('admin_credit', uid=user.id) }}">
+      <div class="form-grid"><div class="form-group"><label>{{ tr('入账金额', 'Credit Amount') }}</label><input type="number" step="0.01" name="amount" required/></div><div class="form-group"><label>{{ tr('币种', 'Currency') }}</label><select name="currency">{% for currency in currencies %}<option value="{{ currency }}">{{ currency }}</option>{% endfor %}</select></div></div>
+      <div class="form-group"><label>{{ tr('说明', 'Description') }}</label><input type="text" name="description" required/></div>
+      <button class="btn btn-success" type="submit">{{ tr('确认入账', 'Credit Account') }}</button>
+    </form>
+    <form method="POST" action="{{ url_for('admin_debit', uid=user.id) }}" style="margin-top:16px;">
+      <div class="form-grid"><div class="form-group"><label>{{ tr('出账金额', 'Debit Amount') }}</label><input type="number" step="0.01" name="amount" required/></div><div class="form-group"><label>{{ tr('币种', 'Currency') }}</label><select name="currency">{% for currency in currencies %}<option value="{{ currency }}">{{ currency }}</option>{% endfor %}</select></div></div>
+      <div class="form-group"><label>{{ tr('说明', 'Description') }}</label><input type="text" name="description" required/></div>
+      <button class="btn btn-danger" type="submit">{{ tr('确认出账', 'Debit Account') }}</button>
+    </form>
+  </div>
+</div>
+<div class="two-col" style="margin-top:16px;">
+  <div class="card"><div class="section-title">{{ tr('贷款记录', 'Loans') }}</div><ul class="list">{% for loan in loans %}<li>{{ loan.created_at.strftime('%Y-%m-%d') }} · {{ "{:,.2f}".format(loan.amount) }} · {{ loan.status }}</li>{% else %}<li>{{ tr('暂无贷款申请。', 'No loan applications.') }}</li>{% endfor %}</ul></div>
+  <div class="card"><div class="section-title">{{ tr('KYC 文件', 'KYC Documents') }}</div><ul class="list">{% for doc in docs %}<li>{{ doc.filename }} · {{ doc.status }}</li>{% else %}<li>{{ tr('暂无 KYC 文件。', 'No KYC documents.') }}</li>{% endfor %}</ul></div>
+</div>
+{% endblock %}

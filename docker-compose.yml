@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: boacceeltd
+      POSTGRES_USER: boacadmin
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  web:
+    build: .
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgresql://boacadmin:password@db:5432/boacceeltd
+      SECRET_KEY: boac-change-this-secret-key
+      FLASK_ENV: production
+    depends_on:
+      - db
+
+volumes:
+  pgdata:

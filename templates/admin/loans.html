@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('贷款审核', 'Loan Review') }}{% endblock %}
+{% block content %}
+<div class="card" style="margin-top:20px;">
+  <div class="section-title">{{ tr('贷款申请审核', 'Loan Application Review') }}</div>
+  <table class="table">
+    <thead><tr><th>{{ tr('用户', 'User') }}</th><th>{{ tr('金额', 'Amount') }}</th><th>{{ tr('期限', 'Term') }}</th><th>{{ tr('状态', 'Status') }}</th><th>{{ tr('操作', 'Action') }}</th></tr></thead>
+    <tbody>
+    {% for loan in loans %}
+      <tr>
+        <td>{{ loan.user.full_name if loan.user else '-' }}</td>
+        <td>{{ "{:,.2f}".format(loan.amount) }}</td>
+        <td>{{ loan.term_months }}</td>
+        <td>{{ loan.status }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('admin_review_loan', loan_id=loan.id) }}" style="display:flex;gap:8px;align-items:center;">
+            <select name="status"><option value="pending">pending</option><option value="approved">approved</option><option value="rejected">rejected</option></select>
+            <input type="text" name="notes" placeholder="{{ tr('备注', 'Notes') }}"/>
+            <button class="btn btn-light" type="submit">{{ tr('更新', 'Update') }}</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5">{{ tr('暂无贷款申请。', 'No loan applications.') }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

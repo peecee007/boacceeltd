@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('新建用户', 'Create User') }}{% endblock %}
+{% block content %}
+<div class="card" style="margin-top:20px;">
+  <div class="section-title">{{ tr('管理员创建账户', 'Create User as Admin') }}</div>
+  <form method="POST">
+    <div class="form-grid">
+      <div class="form-group"><label>{{ tr('姓名', 'Full Name') }}</label><input type="text" name="full_name" value="{{ form.get('full_name','') }}" required/></div>
+      <div class="form-group"><label>{{ tr('邮箱', 'Email') }}</label><input type="email" name="email" value="{{ form.get('email','') }}" required/></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>{{ tr('电话', 'Phone') }}</label><input type="text" name="phone" value="{{ form.get('phone','') }}"/></div>
+      <div class="form-group"><label>{{ tr('地址', 'Address') }}</label><input type="text" name="address" value="{{ form.get('address','') }}"/></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>{{ tr('账户类型', 'Account Type') }}</label><select name="account_type"><option value="personal">{{ tr('个人账户', 'Personal') }}</option><option value="corporate">{{ tr('企业账户', 'Corporate') }}</option></select></div>
+      <div class="form-group"><label>{{ tr('主币种', 'Primary Currency') }}</label><select name="currency">{% for currency in currencies %}<option value="{{ currency }}">{{ currency }}</option>{% endfor %}</select></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>{{ tr('界面语言', 'Interface Language') }}</label><select name="preferred_lang"><option value="zh">中文</option><option value="en">English</option></select></div>
+      <div class="form-group"><label>{{ tr('开户余额', 'Opening Balance') }}</label><input type="number" step="0.01" name="balance" value="{{ form.get('balance','0') }}"/></div>
+    </div>
+    <div class="form-group"><label>{{ tr('密码', 'Password') }}</label><input type="password" name="password" required/></div>
+    <button type="submit" class="btn btn-primary">{{ tr('创建用户', 'Create User') }}</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('KYC 审核', 'KYC Review') }}{% endblock %}
+{% block content %}
+<div class="card" style="margin-top:20px;">
+  <div class="section-title">{{ tr('KYC 文件审核', 'KYC Document Review') }}</div>
+  <table class="table">
+    <thead><tr><th>{{ tr('用户', 'User') }}</th><th>{{ tr('文件名', 'Filename') }}</th><th>{{ tr('状态', 'Status') }}</th><th>{{ tr('操作', 'Action') }}</th></tr></thead>
+    <tbody>
+    {% for doc in docs %}
+      <tr>
+        <td>{{ doc.user.full_name if doc.user else '-' }}</td>
+        <td>{{ doc.filename }}</td>
+        <td>{{ doc.status }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('admin_review_kyc', doc_id=doc.id) }}" style="display:flex;gap:8px;align-items:center;">
+            <select name="status"><option value="pending">pending</option><option value="approved">approved</option><option value="rejected">rejected</option></select>
+            <button class="btn btn-light" type="submit">{{ tr('更新', 'Update') }}</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="4">{{ tr('暂无 KYC 文件。', 'No KYC documents.') }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
