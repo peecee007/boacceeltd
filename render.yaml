@@ -1,9 +1,14 @@
+version: "1"
 services:
   - type: web
     name: boacceeltd
     runtime: docker
+    repo: https://github.com/peecee007/boacceeltd
     plan: free
-    autoDeploy: true
+    region: oregon
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    autoDeployTrigger: commit
     envVars:
       - key: SECRET_KEY
         generateValue: true
@@ -17,3 +22,4 @@ services:
 databases:
   - name: boacceeltd-db
     plan: free
+    region: oregon
