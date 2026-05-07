@@ -1,41 +1,26 @@
+# Exported from Render on 2026-05-07T13:59:23Z
 version: "1"
 services:
-  - type: web
-    name: boacceeltd
-    runtime: docker
-    plan: free
-    region: oregon
-    dockerContext: .
-    dockerfilePath: ./Dockerfile
-    autoDeployTrigger: commit
-    healthCheckPath: /healthz
-    envVars:
-      - key: SECRET_KEY
-        generateValue: true
-      - key: DEFAULT_ADMIN_PASSWORD
-        sync: false
-      - key: FLASK_ENV
-        value: production
-      - key: PREFERRED_URL_SCHEME
-        value: https
-      - key: DATABASE_URL
-        fromDatabase:
-          name: boacceeltd-db
-          property: connectionString
-      - key: SMTP_HOST
-        sync: false
-      - key: SMTP_PORT
-        value: "587"
-      - key: SMTP_USER
-        sync: false
-      - key: SMTP_PASSWORD
-        sync: false
-      - key: SMTP_SENDER
-        sync: false
-      - key: SMTP_TLS
-        value: "true"
-
-databases:
-  - name: boacceeltd-db
-    plan: free
-    region: oregon
+- type: web
+  name: boacceeltd
+  runtime: docker
+  repo: https://github.com/peecee007/boacceeltd
+  plan: free
+  envVars:
+  - key: SMTP_TLS
+    sync: false
+  - key: SMTP_PORT
+    sync: false
+  - key: PREFERRED_URL_SCHEME
+    sync: false
+  - key: DATABASE_URL
+    sync: false
+  - key: FLASK_ENV
+    sync: false
+  - key: SECRET_KEY
+    sync: false
+  region: oregon
+  healthCheckPath: /healthz
+  dockerContext: .
+  dockerfilePath: ./Dockerfile
+  autoDeployTrigger: commit
