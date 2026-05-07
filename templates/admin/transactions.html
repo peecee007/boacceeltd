@@ -2,7 +2,7 @@
 {% block title %}{{ tr('交易记录', 'Transactions') }}{% endblock %}
 {% block content %}
 <div class="card" style="margin-top:20px;">
-  <div class="section-title">{{ tr('交易记录与审批', 'Transactions and Approval Queue') }}</div>
+  <div class="section-title">{{ tr('交易记录与审批队列', 'Transactions and Approval Queue') }}</div>
   <table class="table">
     <thead>
       <tr>
@@ -13,7 +13,7 @@
         <th>{{ tr('状态', 'Status') }}</th>
         <th>{{ tr('金额', 'Amount') }}</th>
         <th>{{ tr('说明', 'Description') }}</th>
-        <th>{{ tr('收款信息', 'Beneficiary') }}</th>
+        <th>{{ tr('目标账户', 'Destination') }}</th>
         <th>{{ tr('操作', 'Action') }}</th>
       </tr>
     </thead>
@@ -26,19 +26,10 @@
         <td>{{ txn.channel }}</td>
         <td>{{ txn.status }}</td>
         <td>{{ "{:,.2f}".format(txn.amount) }} {{ txn.currency }}</td>
-        <td>{{ txn.description }}</td>
+        <td>{{ txn.description }}<br/><span class="muted">{{ txn.reference_no }}</span></td>
+        <td>{{ txn.beneficiary_name or '-' }}<br/><span class="muted">{{ txn.beneficiary_account or '' }}</span></td>
         <td>
-          {% if txn.beneficiary_name %}
-            {{ txn.beneficiary_name }}<br/>
-            <span class="muted">{{ txn.beneficiary_account }}</span>
-            {% if txn.destination_bank %}<br/><span class="muted">{{ txn.destination_bank }} / {{ txn.destination_country }}</span>{% endif %}
-            {% if txn.swift_code %}<br/><span class="muted">SWIFT: {{ txn.swift_code }}</span>{% endif %}
-          {% else %}
-            -
-          {% endif %}
-        </td>
-        <td>
-          {% if txn.status == 'pending' %}
+          {% if txn.status == 'pending' and can('review_transactions') %}
           <form method="POST" action="{{ url_for('admin_review_transaction', txn_id=txn.id) }}" style="display:flex;gap:8px;align-items:center;">
             <select name="status">
               <option value="approved">{{ tr('批准', 'Approve') }}</option>
@@ -47,7 +38,7 @@
             <button class="btn btn-light" type="submit">{{ tr('更新', 'Update') }}</button>
           </form>
           {% else %}
-            <span class="muted">{{ tr('已处理', 'Processed') }}</span>
+            <span class="muted">{{ tr('仅查看', 'View only') }}</span>
           {% endif %}
         </td>
       </tr>

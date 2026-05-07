@@ -32,6 +32,46 @@
   <div class="feature-card"><h3>{{ tr('安全与通知', 'Security and notifications') }}</h3><p>{{ tr('提供登录提醒邮件、站内通知与双重验证。', 'Provides login alerts, in-app notifications, and two-factor authentication.') }}</p></div>
 </section>
 
+<section class="link-grid">
+  <div class="link-card">
+    <h3>{{ tr('公共栏目', 'Public Sections') }}</h3>
+    <ul class="list">
+      <li><a href="{{ url_for('index') }}">{{ tr('首页', 'Home') }}</a></li>
+      <li><a href="{{ url_for('online_banking') }}">{{ tr('网上银行', 'Online Banking') }}</a></li>
+      <li><a href="{{ url_for('personal_banking') }}">{{ tr('个人金融', 'Personal Banking') }}</a></li>
+      <li><a href="{{ url_for('corporate_banking') }}">{{ tr('公司金融', 'Corporate Banking') }}</a></li>
+      <li><a href="{{ url_for('customer_service') }}">{{ tr('客户服务', 'Customer Service') }}</a></li>
+      <li><a href="{{ url_for('about_us') }}">{{ tr('关于我们', 'About Us') }}</a></li>
+    </ul>
+  </div>
+  <div class="link-card">
+    <h3>{{ tr('客户功能入口', 'Customer Functions') }}</h3>
+    <ul class="list">
+      <li><a href="{{ url_for('register') }}">{{ tr('开户注册', 'Open Account') }}</a></li>
+      <li><a href="{{ url_for('login') }}">{{ tr('登录', 'Login') }}</a></li>
+      <li><a href="{{ url_for('interest_calculator') }}">{{ tr('利息计算器', 'Interest Calculator') }}</a></li>
+      {% if session.user_id and not session.is_admin %}
+      <li><a href="{{ url_for('dashboard') }}">{{ tr('账户中心', 'Dashboard') }}</a></li>
+      <li><a href="{{ url_for('transfer_funds') }}">{{ tr('转账汇款', 'Transfers') }}</a></li>
+      <li><a href="{{ url_for('international_remittance') }}">{{ tr('国际汇款', 'International Remittance') }}</a></li>
+      <li><a href="{{ url_for('loan_application') }}">{{ tr('贷款申请', 'Loan Application') }}</a></li>
+      <li><a href="{{ url_for('kyc_upload') }}">{{ tr('KYC 上传', 'KYC Upload') }}</a></li>
+      {% endif %}
+    </ul>
+  </div>
+  <div class="link-card">
+    <h3>{{ tr('管理功能入口', 'Admin Functions') }}</h3>
+    <ul class="list">
+      <li><a href="{{ url_for('admin_dashboard') if session.is_admin else url_for('login') }}">{{ tr('后台首页', 'Admin Home') }}</a></li>
+      <li><a href="{{ url_for('admin_users') if session.is_admin else url_for('login') }}">{{ tr('用户管理', 'User Management') }}</a></li>
+      <li><a href="{{ url_for('admin_transactions') if session.is_admin else url_for('login') }}">{{ tr('交易审批', 'Transaction Approval') }}</a></li>
+      <li><a href="{{ url_for('admin_loans') if session.is_admin else url_for('login') }}">{{ tr('贷款审核', 'Loan Review') }}</a></li>
+      <li><a href="{{ url_for('admin_kyc') if session.is_admin else url_for('login') }}">{{ tr('KYC 审核', 'KYC Review') }}</a></li>
+      <li><a href="{{ url_for('admin_logs') if session.is_admin else url_for('login') }}">{{ tr('登录日志', 'Login Logs') }}</a></li>
+    </ul>
+  </div>
+</section>
+
 <section class="layout" style="grid-template-columns:1fr 320px;">
   <div class="card">
     <div class="section-title">{{ tr('快速入口', 'Quick Access') }}</div>

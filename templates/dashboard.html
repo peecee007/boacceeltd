@@ -4,54 +4,94 @@
 <section class="hero" style="grid-template-columns:1fr;">
   <div class="hero-banner">
     <h1>{{ tr('欢迎', 'Welcome') }} {{ user.full_name }}</h1>
-    <p>{{ tr('您当前的主账户类型为', 'Your current primary account type is') }} {{ tr('个人账户', 'Personal Account') if user.account_type == 'personal' else tr('企业账户', 'Corporate Account') }}，{{ tr('主币种为', 'with primary currency') }} {{ user.currency }}。</p>
+    <p>{{ tr('您的主账户为', 'Your primary account is') }} {{ user.account_no }} · {{ user.currency }}. {{ tr('今日已转账', 'Transferred today') }} {{ "{:,.2f}".format(transfer_total_today) }} {{ user.currency }} / {{ "{:,.2f}".format(user.daily_transfer_limit) }} {{ user.currency }}.</p>
     <div class="hero-actions">
-      <a class="btn btn-light" href="{{ url_for('export_transactions_pdf') }}">{{ tr('导出交易 PDF', 'Export Transactions PDF') }}</a>
-      <a class="btn btn-light" href="{{ url_for('transfer_funds') }}">{{ tr('发起转账', 'Transfer Funds') }}</a>
+      <a class="btn btn-light" href="{{ url_for('transfer_funds') }}">{{ tr('账户转账', 'Transfer Funds') }}</a>
       <a class="btn btn-light" href="{{ url_for('international_remittance') }}">{{ tr('国际汇款', 'International Remittance') }}</a>
-      <a class="btn btn-light" href="{{ url_for('loan_application') }}">{{ tr('贷款申请', 'Loan Application') }}</a>
-      <a class="btn btn-light" href="{{ url_for('kyc_upload') }}">{{ tr('KYC 上传', 'KYC Upload') }}</a>
-      <a class="btn btn-light" href="{{ url_for('security') }}">{{ tr('安全中心', 'Security Center') }}</a>
+      <a class="btn btn-light" href="{{ url_for('export_transactions_pdf') }}">{{ tr('导出对账单 PDF', 'Export PDF Statement') }}</a>
+      <a class="btn btn-light" href="{{ url_for('security') }}">{{ tr('设置交易 PIN', 'Set Transaction PIN') }}</a>
+      <a class="btn btn-light" href="{{ url_for('support_chat') }}">{{ tr('在线客服', 'Live Chat') }}</a>
     </div>
   </div>
 </section>
 
 <section class="dashboard-grid">
   <div class="stat-card"><h3>{{ tr('主账户余额', 'Primary Balance') }}</h3><div style="font-size:26px;font-weight:700;">{{ "{:,.2f}".format(user.balance) }} {{ user.currency }}</div></div>
-  <div class="stat-card"><h3>{{ tr('KYC 状态', 'KYC Status') }}</h3><div style="font-size:22px;font-weight:700;">{{ user.kyc_status }}</div></div>
-  <div class="stat-card"><h3>{{ tr('2FA 状态', '2FA Status') }}</h3><div style="font-size:22px;font-weight:700;">{{ tr('已启用', 'Enabled') if user.two_factor_enabled else tr('未启用', 'Disabled') }}</div></div>
+  <div class="stat-card"><h3>{{ tr('今日剩余转账额度', 'Daily Transfer Limit Left') }}</h3><div style="font-size:22px;font-weight:700;">{{ "{:,.2f}".format(transfer_limit_left) }} {{ user.currency }}</div></div>
+  <div class="stat-card"><h3>{{ tr('2FA / PIN', '2FA / PIN') }}</h3><div style="font-size:22px;font-weight:700;">{{ tr('已启用', '2FA On') if user.two_factor_enabled else tr('未启用', '2FA Off') }} · {{ tr('已设置 PIN', 'PIN Set') if user.transaction_pin_hash else tr('未设置 PIN', 'PIN Missing') }}</div></div>
 </section>
 
 <section class="two-col">
   <div class="card">
-    <div class="section-title">{{ tr('多币种余额', 'Multi-currency Balances') }}</div>
-    <table class="table">
-      <thead><tr><th>{{ tr('币种', 'Currency') }}</th><th>{{ tr('余额', 'Balance') }}</th></tr></thead>
-      <tbody>
-      {% for wallet in wallets %}
-        <tr><td>{{ wallet.currency }}</td><td>{{ "{:,.2f}".format(wallet.amount) }}</td></tr>
-      {% endfor %}
-      </tbody>
-    </table>
+    <div class="section-title">{{ tr('虚拟借记卡', 'Virtual Debit Card') }}</div>
+    <div style="border-radius:18px;padding:22px;background:linear-gradient(135deg,#941111,#d5534a);color:#fff;min-height:200px;display:flex;flex-direction:column;justify-content:space-between;">
+      <div style="font-size:13px;opacity:.9;">BOACCEELTD</div>
+      <div style="font-size:24px;letter-spacing:.08em;font-weight:700;">{{ format_card_number(user.virtual_card_no) }}</div>
+      <div class="action-row" style="justify-content:space-between;color:#fff;">
+        <div><div style="font-size:11px;opacity:.8;">{{ tr('持卡人', 'Cardholder') }}</div><div>{{ user.full_name }}</div></div>
+        <div><div style="font-size:11px;opacity:.8;">{{ tr('到期', 'Expiry') }}</div><div>{{ user.virtual_card_expiry }}</div></div>
+        <div><div style="font-size:11px;opacity:.8;">CVV</div><div>{{ user.virtual_card_cvv }}</div></div>
+      </div>
+    </div>
   </div>
   <div class="card">
-    <div class="section-title">{{ tr('最近交易', 'Recent Transactions') }}</div>
-    <table class="table">
-      <thead><tr><th>{{ tr('日期', 'Date') }}</th><th>{{ tr('类型', 'Type') }}</th><th>{{ tr('金额', 'Amount') }}</th></tr></thead>
-      <tbody>
-      {% for txn in txns %}
-        <tr><td>{{ txn.created_at.strftime('%Y-%m-%d') }}</td><td>{{ txn.channel }} / {{ txn.status }}</td><td>{{ "{:,.2f}".format(txn.amount) }} {{ txn.currency }}</td></tr>
-      {% else %}
-        <tr><td colspan="3">{{ tr('暂无交易记录。', 'No transactions yet.') }}</td></tr>
-      {% endfor %}
-      </tbody>
-    </table>
+    <div class="section-title">{{ tr('推荐计划', 'Referral Program') }}</div>
+    <p class="muted">{{ tr('分享您的注册链接，有新用户注册时即可获得奖励。', 'Share your referral link and earn a bonus when someone signs up.') }}</p>
+    <div style="margin-top:12px;padding:12px;border:1px dashed #ccc;border-radius:10px;word-break:break-all;">{{ referral_link }}</div>
+    <ul class="list" style="margin-top:12px;">
+      <li>{{ tr('推荐码', 'Referral Code') }}: <strong>{{ user.referral_code }}</strong></li>
+      <li>{{ tr('已邀请用户', 'Successful Referrals') }}: {{ user.referrals|length }}</li>
+    </ul>
   </div>
 </section>
 
 <section class="two-col" style="margin-top:16px;">
   <div class="card">
-    <div class="section-title">{{ tr('通知', 'Notifications') }}</div>
+    <div class="section-title">{{ tr('多币种钱包', 'Multi-Currency Wallet') }}</div>
+    <table class="table">
+      <thead><tr><th>{{ tr('币种', 'Currency') }}</th><th>{{ tr('余额', 'Balance') }}</th><th>{{ tr('参考汇率', 'Reference Rate') }}</th></tr></thead>
+      <tbody>
+      {% for wallet in wallets %}
+        <tr><td>{{ wallet.currency }}</td><td>{{ "{:,.2f}".format(wallet.amount) }}</td><td>1 EUR = {{ "{:,.4f}".format(rates[wallet.currency]) }} {{ wallet.currency }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <div class="muted" style="margin-top:8px;">{{ tr('汇率最近更新于', 'Rates last updated') }} {{ exchange_updated_at.strftime('%Y-%m-%d %H:%M UTC') }}</div>
+  </div>
+  <div class="card">
+    <div class="section-title">{{ tr('钱包换汇', 'Wallet Conversion') }}</div>
+    <form method="POST" action="{{ url_for('wallet_convert') }}">
+      <div class="form-grid">
+        <div class="form-group"><label>{{ tr('从', 'From') }}</label><select name="from_currency">{% for wallet in wallets %}<option value="{{ wallet.currency }}">{{ wallet.currency }}</option>{% endfor %}</select></div>
+        <div class="form-group"><label>{{ tr('到', 'To') }}</label><select name="to_currency">{% for wallet in wallets %}<option value="{{ wallet.currency }}">{{ wallet.currency }}</option>{% endfor %}</select></div>
+      </div>
+      <div class="form-group"><label>{{ tr('金额', 'Amount') }}</label><input type="number" step="0.01" name="amount" required/></div>
+      <button class="btn btn-primary" type="submit">{{ tr('立即换汇', 'Convert Funds') }}</button>
+    </form>
+  </div>
+</section>
+
+<section class="two-col" style="margin-top:16px;">
+  <div class="card">
+    <div class="section-title">{{ tr('最近交易', 'Recent Transactions') }}</div>
+    <table class="table">
+      <thead><tr><th>{{ tr('日期', 'Date') }}</th><th>{{ tr('渠道', 'Channel') }}</th><th>{{ tr('说明', 'Description') }}</th><th>{{ tr('金额', 'Amount') }}</th></tr></thead>
+      <tbody>
+      {% for txn in txns %}
+        <tr>
+          <td>{{ txn.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>{{ txn.channel }} / {{ txn.status }}</td>
+          <td>{{ txn.description }}</td>
+          <td>{{ "{:,.2f}".format(txn.amount) }} {{ txn.currency }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4">{{ tr('暂无交易记录。', 'No transactions yet.') }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="section-title">{{ tr('通知与邮件', 'Notifications and Emails') }}</div>
     <ul class="list">
       {% for note in notifications %}
         <li><strong>{{ note.subject }}</strong><br/><span class="muted">{{ note.message }}</span></li>
@@ -60,13 +100,63 @@
       {% endfor %}
     </ul>
   </div>
+</section>
+
+<section class="two-col" style="margin-top:16px;">
   <div class="card">
-    <div class="section-title">{{ tr('贷款与 KYC', 'Loans and KYC') }}</div>
+    <div class="section-title">{{ tr('贷款与还款计划', 'Loans and Repayment Schedule') }}</div>
     <ul class="list">
-      <li>{{ tr('最近贷款申请数', 'Recent loan applications') }}: {{ loans|length }}</li>
-      <li>{{ tr('已上传 KYC 文件数', 'Uploaded KYC documents') }}: {{ docs|length }}</li>
-      <li><a href="{{ url_for('settings') }}">{{ tr('账户偏好设置', 'Account preferences') }}</a></li>
+      {% for loan in loans %}
+      <li>
+        {{ "{:,.2f}".format(loan.amount) }} · {{ loan.status }}{% if loan.monthly_payment %} · {{ tr('月供', 'Monthly') }} {{ "{:,.2f}".format(loan.monthly_payment) }}{% endif %}
+        {% if loan.id in loan_schedules %}
+        <table class="table" style="margin-top:10px;">
+          <thead><tr><th>#</th><th>{{ tr('到期日', 'Due') }}</th><th>{{ tr('还款', 'Payment') }}</th><th>{{ tr('余额', 'Balance') }}</th></tr></thead>
+          <tbody>
+          {% for item in loan_schedules[loan.id] %}
+            <tr><td>{{ item.month }}</td><td>{{ item.due_date.strftime('%Y-%m-%d') }}</td><td>{{ "{:,.2f}".format(item.payment) }}</td><td>{{ "{:,.2f}".format(item.balance) }}</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+      </li>
+      {% else %}
+      <li>{{ tr('暂无贷款申请。', 'No loan applications.') }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="card">
+    <div class="section-title">{{ tr('KYC 与活动日志', 'KYC and Activity Log') }}</div>
+    <ul class="list">
+      <li>{{ tr('KYC 状态', 'KYC Status') }}: <strong>{{ user.kyc_status }}</strong></li>
+      <li>{{ tr('已上传文件数', 'Uploaded documents') }}: {{ docs|length }}</li>
+      <li><a href="{{ url_for('activity_log') }}">{{ tr('查看全部登录历史', 'View full activity log') }}</a></li>
+      {% for log in activity_logs[:4] %}
+      <li>{{ log.timestamp.strftime('%Y-%m-%d %H:%M') }} · {{ log.ip_address }} · {{ log.device or '-' }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<section class="two-col" style="margin-top:16px;">
+  <div class="card">
+    <div class="section-title">{{ tr('在线客服预览', 'Live Chat Preview') }}</div>
+    <ul class="list">
+      {% for msg in support_messages[:4] %}
+      <li><strong>{{ msg.sender_name }}</strong><br/><span class="muted">{{ msg.message }}</span></li>
+      {% else %}
+      <li>{{ tr('暂无聊天记录。', 'No chat messages yet.') }}</li>
+      {% endfor %}
+    </ul>
+    <div style="margin-top:12px;"><a class="btn btn-light" href="{{ url_for('support_chat') }}">{{ tr('打开在线客服', 'Open Live Chat') }}</a></div>
+  </div>
+  <div class="card">
+    <div class="section-title">{{ tr('快捷功能', 'Quick Functions') }}</div>
+    <ul class="list">
+      <li><a href="{{ url_for('settings') }}">{{ tr('账户设置', 'Account Settings') }}</a></li>
+      <li><a href="{{ url_for('security') }}">{{ tr('安全中心与 PIN', 'Security Center and PIN') }}</a></li>
       <li><a href="{{ url_for('interest_calculator') }}">{{ tr('利息计算器', 'Interest Calculator') }}</a></li>
+      <li><a href="{{ url_for('loan_application') }}">{{ tr('提交贷款申请', 'Submit Loan Application') }}</a></li>
     </ul>
   </div>
 </section>

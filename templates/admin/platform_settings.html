@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('平台设置', 'Platform Settings') }}{% endblock %}
+{% block content %}
+<div class="card" style="margin-top:20px;">
+  <div class="section-title">{{ tr('推荐奖励与汇率设置', 'Referral Bonus and Exchange Rates') }}</div>
+  <form method="POST">
+    <div class="form-group"><label>{{ tr('推荐奖励金额', 'Referral Bonus Amount') }}</label><input type="number" step="0.01" name="referral_bonus" value="{{ referral_bonus }}"/></div>
+    <div class="form-grid">
+      {% for currency in currencies %}
+      <div class="form-group"><label>1 EUR = {{ currency }}</label><input type="number" step="0.0001" name="fx_{{ currency }}" value="{{ rates[currency] }}"/></div>
+      {% endfor %}
+    </div>
+    <div class="muted" style="margin-bottom:16px;">{{ tr('汇率最后更新于', 'Rates last updated') }} {{ exchange_updated_at.strftime('%Y-%m-%d %H:%M UTC') }}</div>
+    <button class="btn btn-primary" type="submit">{{ tr('保存设置', 'Save Settings') }}</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('客服消息', 'Chat Inbox') }}{% endblock %}
+{% block content %}
+<div class="two-col" style="margin-top:20px;grid-template-columns:320px 1fr;">
+  <div class="card">
+    <div class="section-title">{{ tr('会话列表', 'Conversations') }}</div>
+    <ul class="list">
+      {% for user in conversation_users %}
+      <li><a href="{{ url_for('admin_chat', user_id=user.id) }}">{{ user.full_name }}</a><br/><span class="muted">{{ user.email }}</span></li>
+      {% else %}
+      <li>{{ tr('暂无会话。', 'No conversations yet.') }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="section-title">{{ tr('聊天窗口', 'Conversation') }}</div>
+    {% if selected_user %}
+    <div style="max-height:420px;overflow:auto;border:1px solid #eee;border-radius:12px;padding:12px;background:#fafafa;">
+      {% for msg in messages %}
+      <div style="margin-bottom:12px;padding:10px 12px;border-radius:12px;background:{{ '#fff0f0' if msg.sender_role == 'customer' else '#ffffff' }};">
+        <strong>{{ msg.sender_name }}</strong>
+        <div class="muted">{{ msg.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+        <div style="margin-top:6px;">{{ msg.message }}</div>
+      </div>
+      {% else %}
+      <div class="muted">{{ tr('暂无消息。', 'No messages yet.') }}</div>
+      {% endfor %}
+    </div>
+    <form method="POST" style="margin-top:16px;">
+      <input type="hidden" name="user_id" value="{{ selected_user.id }}"/>
+      <div class="form-group"><label>{{ tr('回复消息', 'Reply') }}</label><textarea name="message" rows="4" required></textarea></div>
+      <button class="btn btn-primary" type="submit">{{ tr('发送回复', 'Send Reply') }}</button>
+    </form>
+    {% else %}
+    <p class="muted">{{ tr('请选择一个用户会话。', 'Select a conversation to begin.') }}</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+setTimeout(function () { window.location.reload(); }, 15000);
+</script>
+{% endblock %}

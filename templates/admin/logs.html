@@ -4,8 +4,14 @@
 <div class="card" style="margin-top:20px;">
   <div class="section-title">{{ tr('登录日志', 'Login Logs') }}</div>
   <table class="table">
-    <thead><tr><th>#</th><th>{{ tr('时间', 'Time') }}</th><th>{{ tr('用户', 'User') }}</th><th>{{ tr('IP', 'IP') }}</th><th>{{ tr('结果', 'Result') }}</th></tr></thead>
-    <tbody>{% for log in logs %}<tr><td>{{ log.id }}</td><td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td><td>{{ log.user.full_name if log.user else '-' }}</td><td>{{ log.ip_address }}</td><td>{{ tr('成功', 'Success') if log.success else tr('失败', 'Failed') }}</td></tr>{% else %}<tr><td colspan="5">{{ tr('暂无日志。', 'No logs found.') }}</td></tr>{% endfor %}</tbody>
+    <thead><tr><th>#</th><th>{{ tr('时间', 'Time') }}</th><th>{{ tr('用户', 'User') }}</th><th>{{ tr('IP', 'IP') }}</th><th>{{ tr('设备', 'Device') }}</th><th>{{ tr('结果', 'Result') }}</th></tr></thead>
+    <tbody>
+    {% for log in logs %}
+      <tr><td>{{ log.id }}</td><td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td><td>{{ log.user.full_name if log.user else '-' }}</td><td>{{ log.ip_address }}</td><td>{{ log.device or '-' }}</td><td>{{ tr('成功', 'Success') if log.success else tr('失败', 'Failed') }}</td></tr>
+    {% else %}
+      <tr><td colspan="6">{{ tr('暂无日志。', 'No logs found.') }}</td></tr>
+    {% endfor %}
+    </tbody>
   </table>
 </div>
 {% endblock %}

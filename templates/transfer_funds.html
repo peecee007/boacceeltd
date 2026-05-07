@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}{{ tr('国际汇款', 'International Remittance') if remittance else tr('转账申请', 'Transfer Request') }}{% endblock %}
+{% block title %}{{ tr('国际汇款', 'International Remittance') if remittance else tr('账户转账', 'Account Transfer') }}{% endblock %}
 {% block content %}
 <div class="two-col" style="margin-top:20px;">
   <div class="card">
-    <div class="section-title">{{ tr('国际汇款申请', 'International Remittance Request') if remittance else tr('本地转账申请', 'Local Transfer Request') }}</div>
+    <div class="section-title">{{ tr('国际汇款申请', 'International Remittance') if remittance else tr('真实账户转账', 'Real Account Transfer') }}</div>
     <form method="POST">
       <div class="form-grid">
         <div class="form-group"><label>{{ tr('金额', 'Amount') }}</label><input type="number" step="0.01" name="amount" value="{{ form.get('amount','') }}" required/></div>
@@ -20,16 +20,20 @@
       </div>
       <div class="form-group"><label>{{ tr('SWIFT 代码', 'SWIFT Code') }}</label><input type="text" name="swift_code" value="{{ form.get('swift_code','') }}" required/></div>
       {% endif %}
-      <div class="form-group"><label>{{ tr('附言 / 说明', 'Reference / Description') }}</label><textarea name="description" rows="4">{{ form.get('description','') }}</textarea></div>
-      <button type="submit" class="btn btn-primary">{{ tr('提交申请', 'Submit Request') }}</button>
+      <div class="form-group"><label>{{ tr('说明', 'Description') }}</label><textarea name="description" rows="3">{{ form.get('description','') }}</textarea></div>
+      <div class="form-group"><label>{{ tr('交易 PIN', 'Transaction PIN') }}</label><input type="password" name="transaction_pin" maxlength="4" inputmode="numeric" required/></div>
+      <button type="submit" class="btn btn-primary">{{ tr('立即提交', 'Submit Transfer') }}</button>
     </form>
   </div>
+
   <div class="card">
-    <div class="section-title">{{ tr('审批说明', 'Approval Notes') }}</div>
+    <div class="section-title">{{ tr('转账说明', 'Transfer Guidance') }}</div>
     <ul class="list">
-      <li>{{ tr('所有用户发起的转账与国际汇款均为待审批状态。', 'All user-initiated transfers and international remittances remain pending until approved.') }}</li>
-      <li>{{ tr('管理员在后台交易记录页批准后才会真正扣减余额。', 'Balances are only debited once an admin approves the request in the transaction console.') }}</li>
-      <li>{{ tr('国际汇款需提供银行、国家与 SWIFT 信息。', 'International remittance requires bank, country, and SWIFT details.') }}</li>
+      <li>{{ tr('今日已使用额度', 'Daily limit used') }}: {{ "{:,.2f}".format(transfer_total_today) }} {{ user.currency }}</li>
+      <li>{{ tr('剩余额度', 'Remaining limit') }}: {{ "{:,.2f}".format(limit_left) }} {{ user.currency }}</li>
+      <li>{{ tr('本地转账时，如果收款账号是系统内账户，将立即到账。', 'Local transfers to an internal BOACCEELTD account settle instantly.') }}</li>
+      <li>{{ tr('外部收款账号和国际汇款会进入管理员审批队列。', 'External recipients and international remittances go to the admin approval queue.') }}</li>
+      <li>{{ tr('请先在安全中心设置 4 位交易 PIN。', 'Set a 4-digit transaction PIN in the security center before sending funds.') }}</li>
     </ul>
   </div>
 </div>

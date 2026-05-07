@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="72" viewBox="0 0 320 72" role="img" aria-labelledby="title desc">
+  <title id="title">Bank of China identity</title>
+  <desc id="desc">Red round emblem with Chinese and English Bank of China wordmark.</desc>
+  <g fill="none" fill-rule="evenodd">
+    <g transform="translate(4 6)" stroke="#b40018" stroke-width="4.8">
+      <circle cx="28" cy="28" r="25.5"/>
+      <rect x="15" y="15" width="26" height="26" rx="3.5"/>
+      <path d="M28 6v18M28 32v18M6 28h18M32 28h18"/>
+      <circle cx="28" cy="28" r="4.6" fill="#b40018" stroke="none"/>
+    </g>
+    <g transform="translate(72 12)" fill="#2b2b2b">
+      <text x="0" y="22" font-family="'SimSun','Songti SC','Noto Serif SC',serif" font-size="22" font-weight="700">中国银行</text>
+      <text x="0" y="46" font-family="'Times New Roman',serif" font-size="15" letter-spacing="2.6">BANK OF CHINA</text>
+      <text x="0" y="62" font-family="'Segoe UI',sans-serif" font-size="10.5" letter-spacing="2" fill="#7d7d7d">CENTRAL AND EASTERN EUROPE</text>
+    </g>
+  </g>
+</svg>

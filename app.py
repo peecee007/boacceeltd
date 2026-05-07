@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from sqlalchemy import inspect, text
@@ -18,7 +19,9 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 app.secret_key = os.environ.get("SECRET_KEY", "boac-super-secret-2024-change-me")
+app.config["PREFERRED_URL_SCHEME"] = os.environ.get("PREFERRED_URL_SCHEME", "https")
 
 
 def get_database_url():
@@ -35,7 +38,7 @@ DATABASE_URL = get_database_url()
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=3)
-app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "uploads", "kyc")
+app.config["UPLOAD_FOLDER"] = os.environ.get("UPLOAD_FOLDER", os.path.join(app.root_path, "uploads", "kyc"))
 app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
 
 db = SQLAlchemy(app)
@@ -1305,6 +1308,11 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/healthz")
+def healthz():
+    return {"status": "ok"}, 200
+
+
 @app.route("/online-banking")
 def online_banking():
     return render_template("service_page.html", key="online_banking", page=SERVICE_CONTENT["online_banking"])
@@ -2371,31 +2379,46 @@ def init_db():
 @app.cli.command("create-admin")
 def create_admin():
     ensure_schema()
-    if not User.query.filter_by(email="admin@boacceeltd.com").first():
-        u = User(full_name="Chief Admin", email="admin@boacceeltd.com",
-                 account_type="corporate", account_no="BOAC00000001",
-                 is_admin=True, is_active=True, currency="EUR", preferred_lang="en", staff_role="super_admin")
-        u.set_password("Admin1234!")
-        db.session.add(u)
-        db.session.flush()
-        initialize_user_wallets(u, 0.0)
-        db.session.commit()
-        print("✅ Admin created: admin@boacceeltd.com / Admin1234!")
+    if ensure_default_chief_admin():
+        print(f"✅ Chief Admin created: {PRIMARY_CHIEF_ADMIN_EMAIL}")
     else:
-        print("ℹ️  Admin already exists.")
+        print("ℹ️  Chief Admin already exists.")
 
-if __name__ == "__main__":
+
+def get_default_admin_password():
+    return os.environ.get("DEFAULT_ADMIN_PASSWORD", "Admin1234!")
+
+
+def ensure_default_chief_admin():
+    if User.query.filter_by(email=PRIMARY_CHIEF_ADMIN_EMAIL).first():
+        return False
+
+    chief_admin = User(
+        full_name="Chief Admin",
+        email=PRIMARY_CHIEF_ADMIN_EMAIL,
+        account_type="corporate",
+        account_no="BOAC00000001",
+        is_admin=True,
+        is_active=True,
+        currency="EUR",
+        preferred_lang="en",
+        staff_role="super_admin",
+    )
+    chief_admin.set_password(get_default_admin_password())
+    db.session.add(chief_admin)
+    db.session.flush()
+    initialize_user_wallets(chief_admin, 0.0)
+    db.session.commit()
+    return True
+
+
+def bootstrap_application():
     with app.app_context():
         ensure_schema()
-        # auto-create admin on first run
-        if not User.query.filter_by(email="admin@boacceeltd.com").first():
-            u = User(full_name="Chief Admin", email="admin@boacceeltd.com",
-                     account_type="corporate", account_no="BOAC00000001",
-                     is_admin=True, is_active=True, currency="EUR", preferred_lang="en", staff_role="super_admin")
-            u.set_password("Admin1234!")
-            db.session.add(u)
-            db.session.flush()
-            initialize_user_wallets(u, 0.0)
-            db.session.commit()
-            print("✅ Admin auto-created: admin@boacceeltd.com / Admin1234!")
-    app.run(debug=False, host="0.0.0.0", port=5000)
+        ensure_default_chief_admin()
+
+
+bootstrap_application()
+
+if __name__ == "__main__":
+    app.run(debug=False, host="0.0.0.0", port=int(os.environ.get("PORT", "5000")))

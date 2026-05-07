@@ -9,6 +9,7 @@
     </div>
     <div class="auth-body">
       <form method="POST">
+        {% if next_target %}<input type="hidden" name="next" value="{{ next_target }}"/>{% endif %}
         <div class="form-group"><label>{{ tr('验证码', 'Verification Code') }}</label><input type="text" name="code" maxlength="6" required/></div>
         <button type="submit" class="btn btn-primary" style="width:100%;">{{ tr('验证并登录', 'Verify and Sign In') }}</button>
       </form>

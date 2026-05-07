@@ -12,12 +12,26 @@
       <div class="form-group"><label>{{ tr('验证码', 'Verification Code') }}</label><input type="text" name="code"/></div>
       <button type="submit" class="btn btn-primary">{{ tr('启用 2FA', 'Enable 2FA') }}</button>
     </form>
+    <form method="POST" style="margin-top:12px;">
+      <input type="hidden" name="action" value="disable"/>
+      <button type="submit" class="btn btn-light">{{ tr('关闭 2FA', 'Disable 2FA') }}</button>
+    </form>
+    <form method="POST" style="margin-top:12px;">
+      <input type="hidden" name="action" value="regenerate"/>
+      <button type="submit" class="btn btn-secondary">{{ tr('重新生成密钥', 'Regenerate Secret') }}</button>
+    </form>
   </div>
+
   <div class="card">
-    <div class="section-title">{{ tr('管理 2FA', 'Manage 2FA') }}</div>
-    <p class="muted">{{ tr('当前状态：', 'Current status:') }} <strong>{{ tr('已启用', 'Enabled') if user.two_factor_enabled else tr('未启用', 'Disabled') }}</strong></p>
-    <form method="POST" style="margin-top:12px;"><input type="hidden" name="action" value="disable"/><button type="submit" class="btn btn-light">{{ tr('关闭 2FA', 'Disable 2FA') }}</button></form>
-    <form method="POST" style="margin-top:12px;"><input type="hidden" name="action" value="regenerate"/><button type="submit" class="btn btn-secondary">{{ tr('重新生成密钥', 'Regenerate Secret') }}</button></form>
+    <div class="section-title">{{ tr('交易 PIN', 'Transaction PIN') }}</div>
+    <p class="muted">{{ tr('转账和汇款前必须输入 4 位数字 PIN。', 'A 4-digit PIN is required before transfers and remittances can be sent.') }}</p>
+    <p class="muted">{{ tr('当前状态', 'Current status') }}: <strong>{{ tr('已设置', 'Set') if user.transaction_pin_hash else tr('未设置', 'Not set') }}</strong></p>
+    <form method="POST" style="margin-top:16px;">
+      <input type="hidden" name="action" value="set_pin"/>
+      <div class="form-group"><label>{{ tr('新的交易 PIN', 'New Transaction PIN') }}</label><input type="password" name="transaction_pin" maxlength="4" inputmode="numeric" required/></div>
+      <div class="form-group"><label>{{ tr('确认交易 PIN', 'Confirm Transaction PIN') }}</label><input type="password" name="confirm_transaction_pin" maxlength="4" inputmode="numeric" required/></div>
+      <button type="submit" class="btn btn-primary">{{ tr('保存交易 PIN', 'Save Transaction PIN') }}</button>
+    </form>
   </div>
 </div>
 {% endblock %}

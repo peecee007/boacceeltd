@@ -13,9 +13,14 @@ a{color:#8b0000;text-decoration:none;}a:hover{color:#c40000;}
 .header,.main-nav,.card,.flash,.panel,.sidebar-card,.admin-hero,.footer-main{background:#fff;}
 .header{border-bottom:1px solid #e5e5e5;}
 .header-inner{display:flex;justify-content:space-between;align-items:center;padding:14px 0;gap:16px;}
+.header-left{display:flex;align-items:center;gap:14px;}
 .logo-area{display:flex;align-items:center;gap:12px;}
-.logo-circle{width:54px;height:54px;border-radius:50%;background:#c40000;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1.2;text-align:center;}
-.logo-main{font-size:20px;font-weight:700;color:#222;}
+.brand-block{display:flex;flex-direction:column;gap:6px;}
+.brand-link{display:inline-flex;align-items:center;color:#222;}
+.brand-link:hover{color:#222;}
+.brand-logo{height:58px;width:auto;display:block;}
+.logo-circle{display:none;}
+.logo-main{display:none;}
 .logo-sub{font-size:11px;color:#888;}
 .header-right{text-align:right;font-size:12px;color:#555;}
 .lang-switch{display:flex;justify-content:flex-end;gap:8px;align-items:center;margin-bottom:6px;}
@@ -28,9 +33,27 @@ a{color:#8b0000;text-decoration:none;}a:hover{color:#c40000;}
 .btn-light{border:1px solid #ddd;background:#fff;color:#333;}
 .btn-success{background:#e8f5e9;color:#2e7d32;}
 .btn-danger{background:#ffebee;color:#c62828;}
+.btn-warning{background:#fff4e5;color:#b26a00;}
 .nav-list{display:flex;list-style:none;gap:0;overflow:auto;}
 .nav-list li a{display:block;padding:14px 16px;color:#333;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap;}
 .nav-list li a:hover,.nav-list li.active a{color:#c40000;border-bottom-color:#c40000;}
+.corner-toggle{display:inline-flex;align-items:center;justify-content:center;padding:9px 14px;border-radius:10px;border:1px solid #ddd;background:#fff;color:#333;font-size:13px;font-weight:700;cursor:pointer;}
+.corner-toggle:hover{background:#c40000;color:#fff;border-color:#c40000;}
+.function-overlay{position:fixed;inset:0;background:rgba(17,17,17,.38);opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:45;}
+.function-drawer{position:fixed;top:0;left:0;height:100vh;width:min(340px,86vw);background:#fff;box-shadow:0 16px 40px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .22s ease;z-index:50;display:flex;flex-direction:column;}
+.drawer-open .function-overlay{opacity:1;pointer-events:auto;}
+.drawer-open .function-drawer{transform:translateX(0);}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 14px;border-bottom:1px solid #ececec;}
+.drawer-title{font-size:14px;font-weight:800;color:#222;letter-spacing:.03em;text-transform:uppercase;}
+.drawer-close{border:none;background:#f4f4f4;color:#333;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;}
+.drawer-close:hover{background:#c40000;color:#fff;}
+.drawer-body{padding:16px 18px 22px;overflow:auto;}
+.drawer-group{margin-bottom:18px;}
+.drawer-group:last-child{margin-bottom:0;}
+.drawer-group-title{font-size:12px;font-weight:800;color:#666;letter-spacing:.05em;text-transform:uppercase;margin-bottom:10px;}
+.drawer-links{display:grid;gap:8px;}
+.drawer-links a{display:block;padding:10px 12px;border-radius:10px;background:#f7f7f7;color:#333;font-size:13px;font-weight:700;}
+.drawer-links a:hover{background:#c40000;color:#fff;}
 .flash-wrap{margin-top:12px;}
 .flash{padding:12px 14px;border-radius:8px;margin-bottom:8px;border:1px solid transparent;}
 .flash.success{background:#e8f5e9;border-color:#c8e6c9;color:#2e7d32;}
@@ -51,9 +74,18 @@ a{color:#8b0000;text-decoration:none;}a:hover{color:#c40000;}
 .dashboard-grid{grid-template-columns:repeat(3,1fr);margin-bottom:18px;}
 .admin-grid,.two-col{grid-template-columns:1fr 1fr;}
 .stats-grid{grid-template-columns:repeat(4,1fr);}
+.link-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px;}
 .feature-card,.stat-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+.link-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
 .feature-card h3,.stat-card h3{font-size:15px;margin-bottom:8px;color:#222;}
+.link-card h3{font-size:15px;margin-bottom:12px;color:#222;}
 .feature-card p,.muted{color:#777;line-height:1.6;}
+.link-card .list li{padding:8px 0;}
+.status-stack{display:flex;gap:6px;flex-wrap:wrap;}
+.action-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.inline-form{display:inline-flex;gap:8px;align-items:center;margin:0;}
+.inline-form button{min-width:110px;}
+.table-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
 .list{list-style:none;}
 .list li{padding:10px 0;border-bottom:1px solid #f0f0f0;}
 .list li:last-child{border-bottom:none;}
@@ -80,24 +112,92 @@ a{color:#8b0000;text-decoration:none;}a:hover{color:#c40000;}
 .admin-nav a.active,.admin-nav a:hover{background:#c40000;color:#fff;}
 .footer-main{margin-top:24px;padding:18px 0;border-top:1px solid #e5e5e5;}
 .footer-row{display:flex;justify-content:space-between;gap:16px;align-items:center;}
+.footer-brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.footer-logo{height:42px;width:auto;display:block;}
+.support-fab{position:fixed;right:18px;bottom:18px;z-index:20;padding:12px 16px;border-radius:999px;background:#c40000;color:#fff;font-weight:700;box-shadow:0 8px 20px rgba(196,0,0,.2);}
+.support-fab:hover{color:#fff;background:#9f0000;}
 @media (max-width: 980px){
-  .layout,.hero,.feature-grid,.dashboard-grid,.stats-grid,.admin-grid,.two-col,.form-grid{grid-template-columns:1fr;}
+  .layout,.hero,.feature-grid,.dashboard-grid,.stats-grid,.admin-grid,.two-col,.form-grid,.link-grid{grid-template-columns:1fr;}
   .header-inner,.footer-row{flex-direction:column;align-items:flex-start;}
   .header-right{text-align:left;width:100%;}
   .lang-switch,.auth-links{justify-content:flex-start;}
+  .function-drawer{width:min(360px,92vw);}
 }
 </style>
 {% block extra_head %}{% endblock %}
 </head>
 <body>
 <div class="top-strip"></div>
+<div class="function-overlay" data-function-overlay></div>
+<aside class="function-drawer" aria-hidden="true" data-function-drawer>
+  <div class="drawer-head">
+    <div class="drawer-title">{{ tr('功能链接', 'Function Links') }}</div>
+    <button type="button" class="drawer-close" data-function-close>{{ tr('关闭', 'Close') }}</button>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-group">
+      <div class="drawer-group-title">{{ tr('公共页面', 'Public Pages') }}</div>
+      <div class="drawer-links">
+        <a href="{{ url_for('index') }}">{{ tr('首页', 'Home') }}</a>
+        <a href="{{ url_for('register') }}">{{ tr('开户注册', 'Open Account') }}</a>
+        <a href="{{ url_for('login') }}">{{ tr('登录', 'Login') }}</a>
+        <a href="{{ url_for('online_banking') }}">{{ tr('网上银行', 'Online Banking') }}</a>
+        <a href="{{ url_for('personal_banking') }}">{{ tr('个人金融', 'Personal Banking') }}</a>
+        <a href="{{ url_for('personal_saving_account') }}">{{ tr('个人储蓄账户', 'Personal Saving Account') }}</a>
+        <a href="{{ url_for('corporate_banking') }}">{{ tr('公司金融', 'Corporate Banking') }}</a>
+        <a href="{{ url_for('corporate_time_deposits') }}">{{ tr('企业定期存款', 'Corporate Time Deposits') }}</a>
+        <a href="{{ url_for('customer_service') }}">{{ tr('客户服务', 'Customer Service') }}</a>
+        <a href="{{ url_for('about_us') }}">{{ tr('关于我们', 'About Us') }}</a>
+        <a href="{{ url_for('interest_calculator') }}">{{ tr('利息计算器', 'Interest Calculator') }}</a>
+      </div>
+    </div>
+    {% if session.user_id and not session.is_admin %}
+    <div class="drawer-group">
+      <div class="drawer-group-title">{{ tr('客户功能', 'Customer Functions') }}</div>
+      <div class="drawer-links">
+        <a href="{{ url_for('dashboard') }}">{{ tr('账户中心', 'Dashboard') }}</a>
+        <a href="{{ url_for('transfer_funds') }}">{{ tr('转账汇款', 'Transfers') }}</a>
+        <a href="{{ url_for('international_remittance') }}">{{ tr('国际汇款', 'International Remittance') }}</a>
+        <a href="{{ url_for('loan_application') }}">{{ tr('贷款申请', 'Loan Application') }}</a>
+        <a href="{{ url_for('kyc_upload') }}">{{ tr('KYC 上传', 'KYC Upload') }}</a>
+        <a href="{{ url_for('security') }}">{{ tr('安全中心', 'Security') }}</a>
+        <a href="{{ url_for('settings') }}">{{ tr('设置', 'Settings') }}</a>
+        <a href="{{ url_for('activity_log') }}">{{ tr('活动日志', 'Activity Log') }}</a>
+        <a href="{{ url_for('support_chat') }}">{{ tr('在线客服', 'Live Chat') }}</a>
+        <a href="{{ url_for('export_transactions_pdf') }}">{{ tr('交易 PDF', 'Transaction PDF') }}</a>
+      </div>
+    </div>
+    {% elif session.is_admin %}
+    <div class="drawer-group">
+      <div class="drawer-group-title">{{ tr('管理功能', 'Admin Functions') }}</div>
+      <div class="drawer-links">
+        <a href="{{ url_for('admin_dashboard') }}">{{ tr('后台首页', 'Admin Home') }}</a>
+        <a href="{{ url_for('admin_users') }}">{{ tr('用户管理', 'Users') }}</a>
+        <a href="{{ url_for('admin_create_user') }}">{{ tr('新建用户', 'Create User') }}</a>
+        <a href="{{ url_for('admin_transactions') }}">{{ tr('交易审批', 'Transactions') }}</a>
+        <a href="{{ url_for('admin_loans') }}">{{ tr('贷款审核', 'Loans') }}</a>
+        <a href="{{ url_for('admin_kyc') }}">{{ tr('KYC 审核', 'KYC') }}</a>
+        <a href="{{ url_for('admin_logs') }}">{{ tr('登录日志', 'Logs') }}</a>
+        {% if can('respond_chat') %}<a href="{{ url_for('admin_chat') }}">{{ tr('实时客服', 'Live Chat') }}</a>{% endif %}
+        {% if can('manage_platform_settings') %}<a href="{{ url_for('admin_platform_settings') }}">{{ tr('平台设置', 'Platform Settings') }}</a>{% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</aside>
 <header class="header">
   <div class="container header-inner">
-    <div class="logo-area">
-      <div class="logo-circle">BOAC<br/>CEE<br/>BANK</div>
-      <div>
-        <div class="logo-main">{{ tr('博安中东欧银行', 'BOAC CEE Bank') }}</div>
-        <div class="logo-sub">{{ tr('个人与企业一体化网上银行平台', 'Integrated personal and corporate online banking platform') }}</div>
+    <div class="header-left">
+      <button type="button" class="corner-toggle" data-function-toggle>{{ tr('功能链接', 'Function Links') }}</button>
+      <div class="logo-area">
+        <a class="brand-link" href="{{ url_for('index') }}" aria-label="{{ tr('è¿”å›žé¦–é¡µ', 'Return to home page') }}">
+          <img class="brand-logo" src="{{ url_for('static', filename='img/boc-identity.svg') }}" alt="{{ tr('ä¸­å›½é“¶è¡Œæ ‡è¯†', 'Bank of China identity') }}"/>
+        </a>
+        <div class="logo-circle">BOAC<br/>CEE<br/>BANK</div>
+        <div>
+          <div class="logo-main">{{ tr('博安中东欧银行', 'BOAC CEE Bank') }}</div>
+          <div class="logo-sub">{{ tr('个人与企业一体化网上银行平台', 'Integrated personal and corporate online banking platform') }}</div>
+        </div>
       </div>
     </div>
     <div class="header-right">
@@ -159,7 +259,12 @@ a{color:#8b0000;text-decoration:none;}a:hover{color:#c40000;}
 </main>
 <footer class="footer-main">
   <div class="container footer-row">
-    <div>{{ tr('博安中东欧银行 · 支持中文与英文切换', 'BOAC CEE Bank · Supports Chinese and English switching') }}</div>
+    <div class="footer-brand">
+      <a class="brand-link" href="{{ url_for('index') }}" aria-label="{{ tr('返回首页', 'Return to home page') }}">
+        <img class="footer-logo" src="{{ url_for('static', filename='img/boc-identity.svg') }}" alt="{{ tr('中国银行标识', 'Bank of China identity') }}"/>
+      </a>
+      <div>{{ tr('博安中东欧银行 · 支持中文与英文切换', 'BOAC CEE Bank · Supports Chinese and English switching') }}</div>
+    </div>
     <div>
       <a href="{{ url_for('index') }}">{{ tr('首页', 'Home') }}</a>
       <a href="{{ url_for('register') }}" style="margin-left:12px;">{{ tr('开户注册', 'Open Account') }}</a>
@@ -169,6 +274,11 @@ a{color:#8b0000;text-decoration:none;}a:hover{color:#c40000;}
     </div>
   </div>
 </footer>
+{% if session.user_id and not session.is_admin %}
+<a class="support-fab" href="{{ url_for('support_chat') }}">{{ tr('在线客服', 'Live Chat') }}</a>
+{% elif session.is_admin and can('respond_chat') %}
+<a class="support-fab" href="{{ url_for('admin_chat') }}">{{ tr('客服消息', 'Chat Inbox') }}</a>
+{% endif %}
 {% block extra_js %}{% endblock %}
 </body>
 </html>

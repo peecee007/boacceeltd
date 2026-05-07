@@ -8,6 +8,11 @@
     <div class="hero-actions">
       <a class="btn btn-primary" href="{{ url_for('register') }}">{{ tr('开户注册', 'Open Account') }}</a>
       <a class="btn btn-light" href="{{ url_for('login') }}">{{ tr('登录', 'Login') }}</a>
+      {% if page.subpages %}
+        {% for subpage in page.subpages %}
+      <li><a href="{{ url_for(subpage.endpoint) }}">{{ tr(subpage.title_zh, subpage.title_en) }}</a></li>
+        {% endfor %}
+      {% endif %}
       {% if session.user_id %}
       <a class="btn btn-light" href="{{ url_for('dashboard') }}">{{ tr('账户中心', 'Dashboard') }}</a>
       {% endif %}
@@ -25,18 +30,67 @@
     </ul>
   </div>
   <div class="card">
-    <div class="section-title">{{ tr('相关入口', 'Related Entry Points') }}</div>
+    <div class="section-title">{{ tr('功能链接', 'Function Links') }}</div>
     <ul class="list">
       <li><a href="{{ url_for('online_banking') }}">{{ tr('网上银行', 'Online Banking') }}</a></li>
       <li><a href="{{ url_for('personal_banking') }}">{{ tr('个人金融', 'Personal Banking') }}</a></li>
       <li><a href="{{ url_for('corporate_banking') }}">{{ tr('公司金融', 'Corporate Banking') }}</a></li>
       <li><a href="{{ url_for('customer_service') }}">{{ tr('客户服务', 'Customer Service') }}</a></li>
       <li><a href="{{ url_for('about_us') }}">{{ tr('关于我们', 'About Us') }}</a></li>
+      <li><a href="{{ url_for('interest_calculator') }}">{{ tr('利息计算器', 'Interest Calculator') }}</a></li>
       {% if session.user_id %}
+      <li><a href="{{ url_for('dashboard') }}">{{ tr('账户中心', 'Dashboard') }}</a></li>
       <li><a href="{{ url_for('transfer_funds') }}">{{ tr('本地转账申请', 'Local transfer request') }}</a></li>
       <li><a href="{{ url_for('international_remittance') }}">{{ tr('国际汇款申请', 'International remittance request') }}</a></li>
+      <li><a href="{{ url_for('loan_application') }}">{{ tr('贷款申请', 'Loan Application') }}</a></li>
+      <li><a href="{{ url_for('kyc_upload') }}">{{ tr('KYC 上传', 'KYC Upload') }}</a></li>
+      <li><a href="{{ url_for('security') }}">{{ tr('安全中心', 'Security Center') }}</a></li>
+      <li><a href="{{ url_for('settings') }}">{{ tr('设置', 'Settings') }}</a></li>
+      {% endif %}
+      {% if session.is_admin %}
+      <li><a href="{{ url_for('admin_dashboard') }}">{{ tr('管理后台', 'Admin Console') }}</a></li>
+      <li><a href="{{ url_for('admin_users') }}">{{ tr('用户管理', 'User Management') }}</a></li>
       {% endif %}
     </ul>
   </div>
 </section>
+
+{% if page.subpages %}
+<section class="link-grid" style="margin-top:16px;">
+  {% for subpage in page.subpages %}
+  <div class="link-card">
+    <h3>{{ tr(subpage.title_zh, subpage.title_en) }}</h3>
+    <p class="muted">{{ tr(subpage.description_zh, subpage.description_en) }}</p>
+    <div style="margin-top:12px;">
+      <a class="btn btn-primary" href="{{ url_for(subpage.endpoint) }}">{{ tr('查看详情', 'View Details') }}</a>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+{% if page.sections %}
+<section class="two-col" style="margin-top:16px;">
+  {% for section in page.sections %}
+  <div class="card">
+    <div class="section-title">{{ tr(section.title_zh, section.title_en) }}</div>
+    {% if section.paragraphs_zh %}
+      {% for paragraph in section.paragraphs_zh %}
+      <p class="muted" style="margin-bottom:10px;">{{ tr(section.paragraphs_zh[loop.index0], section.paragraphs_en[loop.index0]) }}</p>
+      {% endfor %}
+    {% endif %}
+    {% if section.bullets_zh %}
+    <ul class="list">
+      {% for bullet in section.bullets_zh %}
+      <li>{{ tr(section.bullets_zh[loop.index0], section.bullets_en[loop.index0]) }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% if section.footer_zh %}
+    <div class="muted" style="margin-top:12px;font-weight:700;">{{ tr(section.footer_zh, section.footer_en) }}</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
 {% endblock %}

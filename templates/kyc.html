@@ -5,19 +5,39 @@
   <div class="card">
     <div class="section-title">{{ tr('上传身份 / 合规文件', 'Upload Identity / Compliance Documents') }}</div>
     <form method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>{{ tr('文件类型', 'Document Type') }}</label>
+        <select name="document_type">
+          <option value="identity">{{ tr('身份证明', 'Identity Document') }}</option>
+          <option value="address">{{ tr('地址证明', 'Proof of Address') }}</option>
+          <option value="corporate">{{ tr('公司文件', 'Corporate Document') }}</option>
+          <option value="tax">{{ tr('税务文件', 'Tax Document') }}</option>
+          <option value="other">{{ tr('其他', 'Other') }}</option>
+        </select>
+      </div>
       <div class="form-group"><label>{{ tr('选择文件', 'Choose File') }}</label><input type="file" name="document" accept=".pdf,.png,.jpg,.jpeg" required/></div>
+      <div class="form-group"><label>{{ tr('备注', 'Notes') }}</label><textarea name="notes" rows="3" placeholder="{{ tr('可填写证件说明、签发机构或补充信息', 'Optional notes about the document, issuer, or extra information') }}"></textarea></div>
       <button type="submit" class="btn btn-primary">{{ tr('上传文件', 'Upload Document') }}</button>
     </form>
   </div>
   <div class="card">
     <div class="section-title">{{ tr('已上传文件', 'Uploaded Documents') }}</div>
     <table class="table">
-      <thead><tr><th>{{ tr('文件名', 'Filename') }}</th><th>{{ tr('状态', 'Status') }}</th><th>{{ tr('时间', 'Uploaded At') }}</th></tr></thead>
+      <thead><tr><th>{{ tr('文件类型', 'Type') }}</th><th>{{ tr('文件名', 'Filename') }}</th><th>{{ tr('大小', 'Size') }}</th><th>{{ tr('状态', 'Status') }}</th><th>{{ tr('时间', 'Uploaded At') }}</th></tr></thead>
       <tbody>
       {% for doc in docs %}
-        <tr><td>{{ doc.filename }}</td><td>{{ doc.status }}</td><td>{{ doc.created_at.strftime('%Y-%m-%d %H:%M') }}</td></tr>
+        <tr>
+          <td>{{ doc.document_type }}</td>
+          <td>
+            {{ doc.filename }}
+            {% if doc.notes %}<div class="muted" style="margin-top:6px;">{{ doc.notes }}</div>{% endif %}
+          </td>
+          <td>{{ ((doc.file_size or 0) / 1024)|round(1) }} KB</td>
+          <td>{{ doc.status }}</td>
+          <td>{{ doc.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+        </tr>
       {% else %}
-        <tr><td colspan="3">{{ tr('暂无上传记录。', 'No uploads yet.') }}</td></tr>
+        <tr><td colspan="5">{{ tr('暂无上传记录。', 'No uploads yet.') }}</td></tr>
       {% endfor %}
       </tbody>
     </table>

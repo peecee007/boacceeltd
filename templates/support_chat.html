@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('在线客服', 'Live Chat Support') }}{% endblock %}
+{% block content %}
+<div class="two-col" style="margin-top:20px;grid-template-columns:1fr 320px;">
+  <div class="card">
+    <div class="section-title">{{ tr('实时客服聊天', 'Live Support Chat') }}</div>
+    <div style="max-height:420px;overflow:auto;border:1px solid #eee;border-radius:12px;padding:12px;background:#fafafa;">
+      {% for msg in messages %}
+      <div style="margin-bottom:12px;padding:10px 12px;border-radius:12px;background:{{ '#fff0f0' if msg.sender_role == 'customer' else '#ffffff' }};">
+        <strong>{{ msg.sender_name }}</strong>
+        <div class="muted">{{ msg.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+        <div style="margin-top:6px;">{{ msg.message }}</div>
+      </div>
+      {% else %}
+      <div class="muted">{{ tr('暂无消息，开始与客服沟通吧。', 'No messages yet. Start the conversation with support.') }}</div>
+      {% endfor %}
+    </div>
+    <form method="POST" style="margin-top:16px;">
+      <div class="form-group"><label>{{ tr('消息', 'Message') }}</label><textarea name="message" rows="4" required></textarea></div>
+      <button class="btn btn-primary" type="submit">{{ tr('发送消息', 'Send Message') }}</button>
+    </form>
+  </div>
+  <div class="card">
+    <div class="section-title">{{ tr('客服提示', 'Support Notes') }}</div>
+    <ul class="list">
+      <li>{{ tr('此聊天窗口会定期刷新，适合快速实时沟通。', 'This chat view can be refreshed regularly for near real-time support.') }}</li>
+      <li>{{ tr('请勿在聊天中发送完整密码或完整 PIN。', 'Do not share your full password or full PIN in chat.') }}</li>
+      <li>{{ tr('交易问题请附上参考号。', 'For transaction issues, include the reference number when available.') }}</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+setTimeout(function () { window.location.reload(); }, 15000);
+</script>
+{% endblock %}
