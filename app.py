@@ -4,7 +4,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from sqlalchemy import inspect, text
-from sqlalchemy.exc import OperationalError
+from sqlalchemy.exc import IntegrityError, OperationalError
 from functools import wraps
 from datetime import datetime, timedelta
 from io import BytesIO
@@ -2392,7 +2392,17 @@ def get_default_admin_password():
 
 
 def ensure_default_chief_admin():
-    if User.query.filter_by(email=PRIMARY_CHIEF_ADMIN_EMAIL).first():
+    existing_admin = User.query.filter(
+        (User.email == PRIMARY_CHIEF_ADMIN_EMAIL) | (User.account_no == "BOAC00000001")
+    ).first()
+    if existing_admin:
+        if not existing_admin.is_admin or existing_admin.staff_role != "super_admin":
+            existing_admin.is_admin = True
+            existing_admin.is_active = True
+            existing_admin.staff_role = "super_admin"
+            if not existing_admin.email:
+                existing_admin.email = PRIMARY_CHIEF_ADMIN_EMAIL
+            db.session.commit()
         return False
 
     chief_admin = User(
@@ -2408,7 +2418,11 @@ def ensure_default_chief_admin():
     )
     chief_admin.set_password(get_default_admin_password())
     db.session.add(chief_admin)
-    db.session.flush()
+    try:
+        db.session.flush()
+    except IntegrityError:
+        db.session.rollback()
+        return False
     initialize_user_wallets(chief_admin, 0.0)
     db.session.commit()
     return True
