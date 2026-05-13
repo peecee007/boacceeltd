@@ -4,6 +4,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from sqlalchemy import inspect, text
+from sqlalchemy.exc import OperationalError
 from functools import wraps
 from datetime import datetime, timedelta
 from io import BytesIO
@@ -12,6 +13,7 @@ from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from urllib.parse import urlparse
 import math
 import json
+import time
 import os, random, string, secrets, smtplib
 
 import pyotp
@@ -2413,9 +2415,23 @@ def ensure_default_chief_admin():
 
 
 def bootstrap_application():
-    with app.app_context():
-        ensure_schema()
-        ensure_default_chief_admin()
+    attempts = int(os.environ.get("DB_BOOTSTRAP_ATTEMPTS", "5"))
+    delay_seconds = float(os.environ.get("DB_BOOTSTRAP_DELAY_SECONDS", "2"))
+    for attempt in range(1, attempts + 1):
+        try:
+            with app.app_context():
+                ensure_schema()
+                ensure_default_chief_admin()
+            return
+        except OperationalError:
+            app.logger.exception(
+                "Database bootstrap failed on attempt %s/%s",
+                attempt,
+                attempts,
+            )
+            if attempt == attempts:
+                raise
+            time.sleep(delay_seconds)
 
 
 bootstrap_application()
