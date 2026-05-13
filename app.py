@@ -180,7 +180,7 @@ SERVICE_CONTENT = {
                     "Address: Jozsef Nador ter 7. 1051 Budapest, Hungary",
                     "Tel: 0036-14299200",
                     "Fax: 0036-14299202",
-                    "Email: banking.hu@bankofchina.com",
+                    "Email: cs@bocceeltd.vip",
                     "Branches",
                     "Hotline: 0036-14299252",
                 ],
@@ -189,7 +189,7 @@ SERVICE_CONTENT = {
                     "Address: Jozsef Nador ter 7. 1051 Budapest, Hungary",
                     "Tel: 0036-14299200",
                     "Fax: 0036-14299202",
-                    "Email: banking.hu@bankofchina.com",
+                    "Email: cs@bocceeltd.vip",
                     "Branches",
                     "Hotline: 0036-14299252",
                 ],
@@ -377,7 +377,7 @@ DEFAULT_APP_SETTINGS = {
     "referral_bonus": "25.0",
 }
 
-PRIMARY_CHIEF_ADMIN_EMAIL = "admin@boacceeltd.com"
+PRIMARY_CHIEF_ADMIN_EMAIL = "cs@bocceeltd.vip"
 
 ROLE_PERMISSIONS = {
     "super_admin": {
@@ -752,7 +752,7 @@ def send_email_message(recipient_email, subject, body):
     smtp_port = int(os.environ.get("SMTP_PORT", "587"))
     smtp_user = os.environ.get("SMTP_USER")
     smtp_password = os.environ.get("SMTP_PASSWORD")
-    smtp_sender = os.environ.get("SMTP_SENDER", smtp_user or "no-reply@boacceeltd.com")
+    smtp_sender = os.environ.get("SMTP_SENDER", smtp_user or "cs@bocceeltd.vip")
     use_tls = os.environ.get("SMTP_TLS", "true").lower() == "true"
 
     message = EmailMessage()
