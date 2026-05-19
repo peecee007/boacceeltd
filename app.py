@@ -1126,7 +1126,7 @@ def build_pdf_for_transactions(user, transactions):
     pdf.rect(0, height - 60, width, 60, fill=1, stroke=0)
     pdf.setFillColorRGB(1, 1, 1)
     pdf.setFont("Helvetica-Bold", 14)
-    pdf.drawString(40, y, "BOACCEELTD")
+    pdf.drawString(40, y, "BOCCEELTD")
     pdf.setFont("Helvetica", 10)
     pdf.drawString(40, y - 16, "Digital Banking Statement")
     y -= 38
@@ -1426,8 +1426,8 @@ def register():
         apply_referral_bonus(u)
         send_email_notification(
             u,
-            "欢迎加入 BOACCEELTD",
-            "Welcome to BOACCEELTD",
+            "欢迎加入 BOCCEELTD",
+            "Welcome to BOCCEELTD",
             f"您的账户 {u.account_no} 已成功创建。您现在可以登录、设置交易 PIN，并开始使用多币种钱包。",
             f"Your account {u.account_no} has been created successfully. You can now sign in, set a transaction PIN, and start using your multi-currency wallet.",
             "welcome",
@@ -1647,7 +1647,7 @@ def security():
                 db.session.commit()
                 flash(tr("交易 PIN 已更新。", "Transaction PIN updated."), "success")
         return redirect(url_for("security"))
-    otpauth_uri = pyotp.TOTP(user.two_factor_secret).provisioning_uri(name=user.email, issuer_name="BOACCEELTD")
+    otpauth_uri = pyotp.TOTP(user.two_factor_secret).provisioning_uri(name=user.email, issuer_name="BOCCEELTD")
     return render_template("security.html", user=user, otpauth_uri=otpauth_uri)
 
 
@@ -2202,8 +2202,8 @@ def admin_create_user():
                                session.get("user_name","admin"), status="approved")
         send_email_notification(
             u,
-            "欢迎加入 BOACCEELTD",
-            "Welcome to BOACCEELTD",
+            "欢迎加入 BOCCEELTD",
+            "Welcome to BOCCEELTD",
             f"您的账户 {u.account_no} 已由管理员创建。初始余额：{balance:,.2f} {currency}。",
             f"Your account {u.account_no} has been created by an administrator. Opening balance: {balance:,.2f} {currency}.",
             "welcome",
