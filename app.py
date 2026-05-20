@@ -967,6 +967,57 @@ def submit_transfer_request(user, amount, currency, description, channel, benefi
         f"Your {description} request has been submitted and is awaiting admin approval.",
         "transfer",
     )
+    if channel == "international_remittance":
+        subject_zh = "国际汇款申请已提交"
+        subject_en = "International remittance submitted"
+        body_zh = (
+            f"您的国际汇款申请已提交。\n"
+            f"金额：{amount:,.2f} {currency}\n"
+            f"收款人：{beneficiary_name}\n"
+            f"收款账号：{beneficiary_account}\n"
+            f"收款银行：{destination_bank}\n"
+            f"SWIFT：{swift_code}\n"
+            f"参考号：{txn.reference_no}\n"
+            f"状态：等待审核"
+        )
+        body_en = (
+            f"Your international remittance request has been submitted.\n"
+            f"Amount: {amount:,.2f} {currency}\n"
+            f"Beneficiary: {beneficiary_name}\n"
+            f"Account: {beneficiary_account}\n"
+            f"Bank: {destination_bank}\n"
+            f"SWIFT: {swift_code}\n"
+            f"Reference: {txn.reference_no}\n"
+            f"Status: Awaiting review"
+        )
+    else:
+        subject_zh = "转账申请已提交"
+        subject_en = "Transfer request submitted"
+        body_zh = (
+            f"您的转账申请已提交。\n"
+            f"金额：{amount:,.2f} {currency}\n"
+            f"收款人：{beneficiary_name}\n"
+            f"收款账号：{beneficiary_account}\n"
+            f"参考号：{txn.reference_no}\n"
+            f"状态：等待审核"
+        )
+        body_en = (
+            f"Your transfer request has been submitted.\n"
+            f"Amount: {amount:,.2f} {currency}\n"
+            f"Beneficiary: {beneficiary_name}\n"
+            f"Account: {beneficiary_account}\n"
+            f"Reference: {txn.reference_no}\n"
+            f"Status: Awaiting review"
+        )
+    send_email_notification(
+        user,
+        subject_zh,
+        subject_en,
+        body_zh,
+        body_en,
+        "transfer",
+        store_notification=False,
+    )
     return txn
 
 
@@ -1031,6 +1082,18 @@ def execute_internal_transfer(sender, recipient, amount, currency, description, 
         "transfer",
     )
     return reference_no
+
+
+def render_transfer_success(transfer_type, amount, currency, beneficiary_name, reference_no, status_label):
+    return render_template(
+        "transfer_success.html",
+        transfer_type=transfer_type,
+        amount=amount,
+        currency=currency,
+        beneficiary_name=beneficiary_name,
+        reference_no=reference_no,
+        status_label=status_label,
+    )
 
 
 def calculate_loan_schedule(amount, annual_rate, term_months, start_date=None):
@@ -1698,12 +1761,24 @@ def transfer_funds():
                 return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=False, transfer_total_today=transfer_total_today, limit_left=limit_left)
             reference_no = execute_internal_transfer(user, internal_recipient, amount, currency, description, "local_transfer")
             db.session.commit()
-            flash(tr(f"转账成功，参考号 {reference_no}。", f"Transfer completed. Reference: {reference_no}."), "success")
-            return redirect(url_for("transfer_funds"))
-        submit_transfer_request(user, amount, currency, description, "local_transfer", beneficiary_name, beneficiary_account, "", "", "")
+            return render_transfer_success(
+                "local",
+                amount,
+                currency,
+                internal_recipient.full_name,
+                reference_no,
+                tr("转账成功", "Transfer completed"),
+            )
+        txn = submit_transfer_request(user, amount, currency, description, "local_transfer", beneficiary_name, beneficiary_account, "", "", "")
         db.session.commit()
-        flash(tr("转账申请已提交，等待管理员审批。", "Transfer request submitted for admin approval."), "success")
-        return redirect(url_for("transfer_funds"))
+        return render_transfer_success(
+            "local",
+            amount,
+            currency,
+            beneficiary_name,
+            txn.reference_no,
+            tr("申请已提交，等待审核", "Request submitted and awaiting review"),
+        )
     return render_template("transfer_funds.html", user=user, wallets=wallets, form={}, remittance=False, transfer_total_today=transfer_total_today, limit_left=limit_left)
 
 
@@ -1737,10 +1812,16 @@ def international_remittance():
         if converted_amount > limit_left:
             flash(tr("超出今日转账限额。", "This remittance exceeds your remaining daily limit."), "error")
             return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=True, transfer_total_today=transfer_total_today, limit_left=limit_left)
-        submit_transfer_request(user, amount, currency, description, "international_remittance", beneficiary_name, beneficiary_account, destination_bank, destination_country, swift_code)
+        txn = submit_transfer_request(user, amount, currency, description, "international_remittance", beneficiary_name, beneficiary_account, destination_bank, destination_country, swift_code)
         db.session.commit()
-        flash(tr("国际汇款申请已提交，等待管理员审批。", "International remittance request submitted for admin approval."), "success")
-        return redirect(url_for("international_remittance"))
+        return render_transfer_success(
+            "international",
+            amount,
+            currency,
+            beneficiary_name,
+            txn.reference_no,
+            tr("申请已提交，等待审核", "Request submitted and awaiting review"),
+        )
     return render_template("transfer_funds.html", user=user, wallets=wallets, form={}, remittance=True, transfer_total_today=transfer_total_today, limit_left=limit_left)
 
 

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}{{ tr('转账成功', 'Transfer Success') }}{% endblock %}
+{% block content %}
+<section class="auth-wrap">
+  <div class="auth-card" style="max-width:720px;">
+    <div class="auth-head" style="position:relative;overflow:hidden;">
+      <div id="success-rings" style="position:absolute;inset:0;pointer-events:none;"></div>
+      <div style="position:relative;z-index:1;">
+        <div id="success-check" style="width:82px;height:82px;border-radius:999px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 14px;">✓</div>
+        <h1 style="font-size:30px;">{{ tr('提交成功', 'Transfer submitted successfully') }}</h1>
+        <p style="margin-top:10px;line-height:1.7;">
+          {{ tr('您的交易已记录，确认邮件将从 cs@bocceeltd.vip 发出。', 'Your transfer has been recorded, and the confirmation email will be sent from cs@bocceeltd.vip.') }}
+        </p>
+      </div>
+    </div>
+    <div class="auth-body">
+      <div class="card" style="box-shadow:none;border:1px solid #eee;">
+        <div class="section-title">{{ tr('转账详情', 'Transfer Details') }}</div>
+        <div class="list">
+          <li><strong>{{ tr('类型', 'Type') }}:</strong> {{ tr('国际汇款', 'International Remittance') if transfer_type == 'international' else tr('本地转账', 'Local Transfer') }}</li>
+          <li><strong>{{ tr('状态', 'Status') }}:</strong> {{ status_label }}</li>
+          <li><strong>{{ tr('金额', 'Amount') }}:</strong> {{ "{:,.2f}".format(amount) }} {{ currency }}</li>
+          <li><strong>{{ tr('收款人', 'Beneficiary') }}:</strong> {{ beneficiary_name }}</li>
+          <li><strong>{{ tr('参考号', 'Reference') }}:</strong> {{ reference_no }}</li>
+        </div>
+      </div>
+      <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+        <a class="btn btn-primary" href="{{ url_for('dashboard') }}">{{ tr('返回账户中心', 'Back to Dashboard') }}</a>
+        <a class="btn btn-light" href="{{ url_for('international_remittance') if transfer_type == 'international' else url_for('transfer_funds') }}">{{ tr('再发起一笔', 'Make Another Transfer') }}</a>
+      </div>
+      <p class="muted" style="margin-top:16px;">
+        {{ tr('页面将在 ', 'This page will redirect in ') }}<span id="redirect-countdown">12</span>{{ tr(' 秒后返回账户中心。', ' seconds to your dashboard.') }}
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block extra_js %}
+<script>
+  (function () {
+    const ringHost = document.getElementById("success-rings");
+    const countdownEl = document.getElementById("redirect-countdown");
+    const redirectUrl = "{{ url_for('dashboard') }}";
+    let seconds = 12;
+
+    function spawnRing(delay) {
+      const ring = document.createElement("div");
+      ring.style.position = "absolute";
+      ring.style.left = "50%";
+      ring.style.top = "50%";
+      ring.style.width = "28px";
+      ring.style.height = "28px";
+      ring.style.border = "2px solid rgba(255,255,255,.45)";
+      ring.style.borderRadius = "999px";
+      ring.style.transform = "translate(-50%, -50%) scale(.5)";
+      ring.style.opacity = "0";
+      ring.style.animation = "successRing 1.6s ease-out " + delay + "ms infinite";
+      ringHost.appendChild(ring);
+    }
+
+    const style = document.createElement("style");
+    style.textContent = "@keyframes successRing{0%{opacity:.8;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(5)}}@keyframes successPop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}";
+    document.head.appendChild(style);
+    document.getElementById("success-check").style.animation = "successPop .55s ease-out";
+    spawnRing(0);
+    spawnRing(520);
+    spawnRing(1040);
+
+    const timer = window.setInterval(function () {
+      seconds -= 1;
+      countdownEl.textContent = String(seconds);
+      if (seconds <= 0) {
+        window.clearInterval(timer);
+        window.location.href = redirectUrl;
+      }
+    }, 1000);
+  })();
+</script>
+{% endblock %}
