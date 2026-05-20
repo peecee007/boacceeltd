@@ -30,7 +30,7 @@
     </ul>
   </div>
   <div class="card">
-    <div class="section-title">{{ tr('功能链接', 'Function Links') }}</div>
+    <div class="section-title">{{ tr('快捷入口', 'Quick Access') }}</div>
     <ul class="list">
       <li><a href="{{ url_for('online_banking') }}">{{ tr('网上银行', 'Online Banking') }}</a></li>
       <li><a href="{{ url_for('personal_banking') }}">{{ tr('个人金融', 'Personal Banking') }}</a></li>
@@ -46,10 +46,6 @@
       <li><a href="{{ url_for('kyc_upload') }}">{{ tr('KYC 上传', 'KYC Upload') }}</a></li>
       <li><a href="{{ url_for('security') }}">{{ tr('安全中心', 'Security Center') }}</a></li>
       <li><a href="{{ url_for('settings') }}">{{ tr('设置', 'Settings') }}</a></li>
-      {% endif %}
-      {% if session.is_admin %}
-      <li><a href="{{ url_for('admin_dashboard') }}">{{ tr('管理后台', 'Admin Console') }}</a></li>
-      <li><a href="{{ url_for('admin_users') }}">{{ tr('用户管理', 'User Management') }}</a></li>
       {% endif %}
     </ul>
   </div>

@@ -26,7 +26,7 @@
 <section class="feature-grid">
   <div class="feature-card"><h3>{{ tr('本地转账', 'Local transfers') }}</h3><p>{{ tr('登录用户可提交本地转账申请，由管理员审核后执行。', 'Signed-in users can submit local transfer requests that are executed only after admin approval.') }}</p></div>
   <div class="feature-card"><h3>{{ tr('国际汇款', 'International remittance') }}</h3><p>{{ tr('支持填写收款人、银行、国家与 SWIFT 信息并提交汇款申请。', 'Supports remittance requests with beneficiary, bank, country, and SWIFT details.') }}</p></div>
-  <div class="feature-card"><h3>{{ tr('交易审批控制', 'Transaction approval control') }}</h3><p>{{ tr('所有用户发起的转账和汇款交易均在管理员后台控制。', 'All user-initiated transfers and remittances are controlled from the admin console.') }}</p></div>
+  <div class="feature-card"><h3>{{ tr('交易审批控制', 'Transaction approval control') }}</h3><p>{{ tr('所有用户发起的转账和汇款交易均经过安全审核流程。', 'All user-initiated transfers and remittances go through a secure review workflow.') }}</p></div>
   <div class="feature-card"><h3>{{ tr('个人金融工具', 'Personal banking tools') }}</h3><p>{{ tr('包括账户中心、贷款申请、利息计算器与 KYC 文件上传。', 'Includes the dashboard, loan applications, interest calculator, and KYC uploads.') }}</p></div>
   <div class="feature-card"><h3>{{ tr('公司金融功能', 'Corporate banking features') }}</h3><p>{{ tr('适用于企业账户、多币种余额与跨境付款申请流程。', 'Suitable for corporate accounts, multi-currency balances, and cross-border payment request flows.') }}</p></div>
   <div class="feature-card"><h3>{{ tr('安全与通知', 'Security and notifications') }}</h3><p>{{ tr('提供登录提醒邮件、站内通知与双重验证。', 'Provides login alerts, in-app notifications, and two-factor authentication.') }}</p></div>
@@ -59,17 +59,6 @@
       {% endif %}
     </ul>
   </div>
-  <div class="link-card">
-    <h3>{{ tr('管理功能入口', 'Admin Functions') }}</h3>
-    <ul class="list">
-      <li><a href="{{ url_for('admin_dashboard') if session.is_admin else url_for('login') }}">{{ tr('后台首页', 'Admin Home') }}</a></li>
-      <li><a href="{{ url_for('admin_users') if session.is_admin else url_for('login') }}">{{ tr('用户管理', 'User Management') }}</a></li>
-      <li><a href="{{ url_for('admin_transactions') if session.is_admin else url_for('login') }}">{{ tr('交易审批', 'Transaction Approval') }}</a></li>
-      <li><a href="{{ url_for('admin_loans') if session.is_admin else url_for('login') }}">{{ tr('贷款审核', 'Loan Review') }}</a></li>
-      <li><a href="{{ url_for('admin_kyc') if session.is_admin else url_for('login') }}">{{ tr('KYC 审核', 'KYC Review') }}</a></li>
-      <li><a href="{{ url_for('admin_logs') if session.is_admin else url_for('login') }}">{{ tr('登录日志', 'Login Logs') }}</a></li>
-    </ul>
-  </div>
 </section>
 
 <section class="layout" style="grid-template-columns:1fr 320px;">
@@ -92,11 +81,6 @@
       <div class="section-title">{{ tr('网上银行', 'Online Banking') }}</div>
       <p class="muted">{{ tr('统一入口整合登录、账户中心、安全设置与导出能力。', 'A unified entry combines sign-in, dashboard, security settings, and export tools.') }}</p>
       <div style="margin-top:12px;"><a class="btn btn-primary" href="{{ url_for('online_banking') }}">{{ tr('查看栏目', 'View Section') }}</a></div>
-    </div>
-    <div class="sidebar-card card">
-      <div class="section-title">{{ tr('管理员后台', 'Admin Console') }}</div>
-      <p class="muted">{{ tr('管理员可审核交易、贷款申请与 KYC 文件。', 'Admins can review transactions, loan applications, and KYC documents.') }}</p>
-      <div style="margin-top:12px;"><a class="btn btn-light" href="{{ url_for('admin_dashboard') if session.is_admin else url_for('login') }}">{{ tr('进入后台', 'Open Admin') }}</a></div>
     </div>
   </div>
 </section>
