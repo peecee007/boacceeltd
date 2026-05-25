@@ -776,7 +776,7 @@ def send_email_notification(user, subject_zh, subject_en, body_zh, body_en, kind
     if store_notification:
         create_notification(user.id, subject_zh, subject_en, body_zh, body_en, kind)
 
-    if not user.email_notifications_enabled:
+    if not getattr(user, "email", None):
         return False
 
     subject = user_text(user, subject_zh, subject_en)
@@ -1655,7 +1655,6 @@ def settings():
     if request.method == "POST":
         preferred_lang = request.form.get("preferred_lang", user.preferred_lang)
         currency = request.form.get("currency", user.currency).strip().upper()
-        user.email_notifications_enabled = request.form.get("email_notifications_enabled") == "on"
         if preferred_lang in LANGUAGES:
             user.preferred_lang = preferred_lang
             session["lang"] = preferred_lang
@@ -1919,7 +1918,7 @@ def loan_application():
             flash(tr("请填写有效的贷款申请信息。", "Please provide valid loan application details."), "error")
             return render_template("loan_application.html", user=user, loans=user.loan_applications, form=request.form)
         db.session.add(LoanApplication(user_id=user.id, amount=amount, term_months=term_months, annual_rate=annual_rate, monthly_income=monthly_income, purpose=purpose))
-        create_notification(user.id, "贷款申请已提交", "Loan application submitted", f"您的贷款申请已提交，申请金额为 {amount:,.2f}。", f"Your loan application has been submitted for {amount:,.2f}.", "loan")
+        send_email_notification(user, "贷款申请已提交", "Loan application submitted", f"您的贷款申请已提交，申请金额为 {amount:,.2f}。", f"Your loan application has been submitted for {amount:,.2f}.", "loan")
         db.session.commit()
         flash(tr("贷款申请已提交。", "Loan application submitted."), "success")
         return redirect(url_for("loan_application"))
@@ -1961,7 +1960,7 @@ def kyc_upload():
             status="pending",
         ))
         user.kyc_status = "pending"
-        create_notification(user.id, "KYC 文件已上传", "KYC document uploaded", f"您的文件 {safe_name} 已上传，正在等待审核。", f"Your document {safe_name} has been uploaded and is awaiting review.", "kyc")
+        send_email_notification(user, "KYC 文件已上传", "KYC document uploaded", f"您的文件 {safe_name} 已上传，正在等待审核。", f"Your document {safe_name} has been uploaded and is awaiting review.", "kyc")
         db.session.commit()
         flash(tr("KYC 文件上传成功。", "KYC document uploaded successfully."), "success")
         return redirect(url_for("kyc_upload"))
