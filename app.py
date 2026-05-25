@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
 from flask_sqlalchemy import SQLAlchemy
+import resend
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -8,13 +9,12 @@ from sqlalchemy.exc import IntegrityError, OperationalError
 from functools import wraps
 from datetime import datetime, timedelta
 from io import BytesIO
-from email.message import EmailMessage
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from urllib.parse import urlparse
 import math
 import json
 import time
-import os, random, string, secrets, smtplib
+import os, random, string, secrets
 
 import pyotp
 from reportlab.lib.pagesizes import A4
@@ -746,34 +746,30 @@ def create_notification(user_id, subject_zh, subject_en, message_zh, message_en,
 
 
 def send_email_message(recipient_email, subject, body):
-    smtp_host = os.environ.get("SMTP_HOST")
-    if not smtp_host:
-        app.logger.info("SMTP not configured; email suppressed for %s", recipient_email)
+    resend_api_key = os.environ.get("RESEND_API_KEY")
+    resend_from = os.environ.get("EMAIL_FROM") or os.environ.get("RESEND_FROM_EMAIL")
+
+    if not resend_api_key:
+        app.logger.warning("Resend is not configured: missing RESEND_API_KEY for %s", recipient_email)
+        return False
+    if not resend_from:
+        app.logger.warning("Resend is not configured: missing EMAIL_FROM/RESEND_FROM_EMAIL for %s", recipient_email)
         return False
 
-    smtp_port = int(os.environ.get("SMTP_PORT", "587"))
-    smtp_user = os.environ.get("SMTP_USER")
-    smtp_password = os.environ.get("SMTP_PASSWORD")
-    smtp_sender = os.environ.get("SMTP_SENDER", smtp_user or "cs@bocceeltd.vip")
-    use_tls = os.environ.get("SMTP_TLS", "true").lower() == "true"
-
-    message = EmailMessage()
-    message["Subject"] = subject
-    message["From"] = smtp_sender
-    message["To"] = recipient_email
-    message.set_content(body)
-
+    app.logger.info("Attempting email via Resend for %s", recipient_email)
+    resend.api_key = resend_api_key
     try:
-        with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as server:
-            if use_tls:
-                server.starttls()
-            if smtp_user and smtp_password:
-                server.login(smtp_user, smtp_password)
-            server.send_message(message)
+        response = resend.Emails.send({
+            "from": resend_from,
+            "to": [recipient_email],
+            "subject": subject,
+            "text": body,
+        })
+        app.logger.info("Email sent via Resend to %s: %s", recipient_email, response)
         return True
     except Exception as exc:
-        app.logger.warning("Failed to send email to %s: %s", recipient_email, exc)
-        return False
+        app.logger.warning("Failed to send email through Resend to %s: %s", recipient_email, exc)
+    return False
 
 
 def send_email_notification(user, subject_zh, subject_en, body_zh, body_en, kind="email", store_notification=True):
@@ -1189,7 +1185,7 @@ def build_pdf_for_transactions(user, transactions):
     pdf.rect(0, height - 60, width, 60, fill=1, stroke=0)
     pdf.setFillColorRGB(1, 1, 1)
     pdf.setFont("Helvetica-Bold", 14)
-    pdf.drawString(40, y, "BOACCEELTD")
+    pdf.drawString(40, y, "BOCCEELTD")
     pdf.setFont("Helvetica", 10)
     pdf.drawString(40, y - 16, "Digital Banking Statement")
     y -= 38
@@ -1489,8 +1485,8 @@ def register():
         apply_referral_bonus(u)
         send_email_notification(
             u,
-            "欢迎加入 BOACCEELTD",
-            "Welcome to BOACCEELTD",
+        "欢迎加入 BOCCEELTD",
+        "Welcome to BOCCEELTD",
             f"您的账户 {u.account_no} 已成功创建。您现在可以登录、设置交易 PIN，并开始使用多币种钱包。",
             f"Your account {u.account_no} has been created successfully. You can now sign in, set a transaction PIN, and start using your multi-currency wallet.",
             "welcome",
@@ -1672,6 +1668,22 @@ def settings():
     return render_template("settings.html", user=user)
 
 
+@app.route("/settings/test-email", methods=["POST"])
+@login_required
+def send_test_email():
+    user = User.query.get_or_404(session["user_id"])
+    subject = tr("测试邮件：BOCCEELTD 邮件服务", "Test email: BOCCEELTD mail service")
+    body = tr(
+        f"这是一封测试邮件，已发送到 {user.email}，用于验证 Resend 或 SMTP 配置是否正常。",
+        f"This is a test email sent to {user.email} to verify that Resend or SMTP is configured correctly.",
+    )
+    if send_email_message(user.email, subject, body):
+        flash(tr("测试邮件已发送，请检查收件箱。", "Test email sent. Please check your inbox."), "success")
+    else:
+        flash(tr("测试邮件发送失败，请检查邮件服务配置。", "Test email failed to send. Please check your email service configuration."), "error")
+    return redirect(url_for("settings"))
+
+
 @app.route("/security", methods=["GET", "POST"])
 @login_required
 def security():
@@ -1710,7 +1722,7 @@ def security():
                 db.session.commit()
                 flash(tr("交易 PIN 已更新。", "Transaction PIN updated."), "success")
         return redirect(url_for("security"))
-    otpauth_uri = pyotp.TOTP(user.two_factor_secret).provisioning_uri(name=user.email, issuer_name="BOACCEELTD")
+    otpauth_uri = pyotp.TOTP(user.two_factor_secret).provisioning_uri(name=user.email, issuer_name="BOCCEELTD")
     return render_template("security.html", user=user, otpauth_uri=otpauth_uri)
 
 
@@ -2283,8 +2295,8 @@ def admin_create_user():
                                session.get("user_name","admin"), status="approved")
         send_email_notification(
             u,
-            "欢迎加入 BOACCEELTD",
-            "Welcome to BOACCEELTD",
+        "欢迎加入 BOCCEELTD",
+        "Welcome to BOCCEELTD",
             f"您的账户 {u.account_no} 已由管理员创建。初始余额：{balance:,.2f} {currency}。",
             f"Your account {u.account_no} has been created by an administrator. Opening balance: {balance:,.2f} {currency}.",
             "welcome",

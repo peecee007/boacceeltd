@@ -12,5 +12,8 @@
     <div class="form-group"><label>{{ tr('每日转账限额（只读）', 'Daily Transfer Limit (read only)') }}</label><input type="text" value="{{ "{:,.2f}".format(user.daily_transfer_limit) }} {{ user.currency }}" readonly/></div>
     <button type="submit" class="btn btn-primary">{{ tr('保存设置', 'Save Settings') }}</button>
   </form>
+  <form method="POST" action="{{ url_for('send_test_email') }}" style="margin-top:12px;">
+    <button type="submit" class="btn">{{ tr('发送测试邮件', 'Send Test Email') }}</button>
+  </form>
 </div>
 {% endblock %}

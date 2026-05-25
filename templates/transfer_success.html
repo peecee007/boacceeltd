@@ -9,7 +9,7 @@
         <div id="success-check" style="width:82px;height:82px;border-radius:999px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 14px;">✓</div>
         <h1 style="font-size:30px;">{{ tr('提交成功', 'Transfer submitted successfully') }}</h1>
         <p style="margin-top:10px;line-height:1.7;">
-          {{ tr('您的交易已记录，确认邮件将从 cs@bocceeltd.vip 发出。', 'Your transfer has been recorded, and the confirmation email will be sent from cs@bocceeltd.vip.') }}
+          {{ tr('您的交易已记录，成功转账消息和参考号已准备好供您查看。', 'Your transfer has been recorded, and your successful transfer message and reference number are ready to review.') }}
         </p>
       </div>
     </div>
@@ -30,6 +30,9 @@
       </div>
       <p class="muted" style="margin-top:16px;">
         {{ tr('页面将在 ', 'This page will redirect in ') }}<span id="redirect-countdown">12</span>{{ tr(' 秒后返回账户中心。', ' seconds to your dashboard.') }}
+      </p>
+      <p class="muted" style="margin-top:8px;">
+        {{ tr('如果您刚刚成功登录，通知中心也会显示登录成功提醒。', 'If you have just logged in successfully, the notifications area will also show your successful login alert.') }}
       </p>
     </div>
   </div>

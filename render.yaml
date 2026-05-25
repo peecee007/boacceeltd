@@ -7,9 +7,9 @@ services:
   repo: https://github.com/peecee007/boacceeltd
   plan: free
   envVars:
-  - key: SMTP_TLS
+  - key: RESEND_API_KEY
     sync: false
-  - key: SMTP_PORT
+  - key: RESEND_FROM_EMAIL
     sync: false
   - key: PREFERRED_URL_SCHEME
     sync: false
