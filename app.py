@@ -1063,17 +1063,17 @@ def execute_internal_transfer(sender, recipient, amount, currency, description, 
     )
     send_email_notification(
         sender,
-        "è½¬è´¦å·²å‘é€",
         "Transfer sent",
-        f"æ‚¨å·²å‘ {recipient.full_name} æˆåŠŸè½¬è´¦ {amount:,.2f} {currency}ã€‚å‚è€ƒå·ï¼š{reference_no}ã€‚",
+        "Transfer sent",
+        f"You successfully sent {amount:,.2f} {currency} to {recipient.full_name}. Reference: {reference_no}.",
         f"You successfully sent {amount:,.2f} {currency} to {recipient.full_name}. Reference: {reference_no}.",
         "transfer",
     )
     send_email_notification(
         recipient,
-        "æ‚¨æ”¶åˆ°ä¸€ç¬”è½¬è´¦",
         "Transfer received",
-        f"æ‚¨å·²æ”¶åˆ° {sender.full_name} è½¬å…¥çš„ {amount:,.2f} {currency}ã€‚å‚è€ƒå·ï¼š{reference_no}ã€‚",
+        "Transfer received",
+        f"You received {amount:,.2f} {currency} from {sender.full_name}. Reference: {reference_no}.",
         f"You received {amount:,.2f} {currency} from {sender.full_name}. Reference: {reference_no}.",
         "transfer",
     )
@@ -1168,9 +1168,9 @@ def complete_login(user, ip_address):
     log_login_attempt(user, ip_address, True)
     send_email_notification(
         user,
-        "登录提醒",
         "Login notification",
-        f"您的账户 {user.email} 刚刚完成登录。如非本人操作，请立即修改密码。",
+        "Login notification",
+        f"Your account {user.email} has just signed in. If this was not you, please change your password immediately.",
         f"Your account {user.email} has just signed in. If this was not you, please change your password immediately.",
     )
     db.session.commit()
