@@ -7,9 +7,23 @@ services:
   repo: https://github.com/peecee007/boacceeltd
   plan: free
   envVars:
+  - key: EMAIL_PROVIDER
+    sync: false
+  - key: EMAIL_FROM
+    sync: false
   - key: RESEND_API_KEY
     sync: false
   - key: RESEND_FROM_EMAIL
+    sync: false
+  - key: ZOHO_SMTP_HOST
+    sync: false
+  - key: ZOHO_SMTP_PORT
+    sync: false
+  - key: ZOHO_SMTP_USERNAME
+    sync: false
+  - key: ZOHO_SMTP_PASSWORD
+    sync: false
+  - key: ZOHO_SMTP_SSL
     sync: false
   - key: PREFERRED_URL_SCHEME
     sync: false

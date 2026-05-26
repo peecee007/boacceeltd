@@ -9,12 +9,13 @@ from sqlalchemy.exc import IntegrityError, OperationalError
 from functools import wraps
 from datetime import datetime, timedelta
 from io import BytesIO
+from email.message import EmailMessage
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from urllib.parse import urlparse
 import math
 import json
 import time
-import os, random, string, secrets
+import os, random, string, secrets, smtplib
 
 import pyotp
 from reportlab.lib.pagesizes import A4
@@ -746,8 +747,45 @@ def create_notification(user_id, subject_zh, subject_en, message_zh, message_en,
 
 
 def send_email_message(recipient_email, subject, body):
+    email_provider = (os.environ.get("EMAIL_PROVIDER") or "").strip().lower()
     resend_api_key = os.environ.get("RESEND_API_KEY")
     resend_from = os.environ.get("EMAIL_FROM") or os.environ.get("RESEND_FROM_EMAIL")
+    zoho_host = os.environ.get("ZOHO_SMTP_HOST", "smtp.zoho.com")
+    zoho_port = int(os.environ.get("ZOHO_SMTP_PORT", "587"))
+    zoho_username = os.environ.get("ZOHO_SMTP_USERNAME")
+    zoho_password = os.environ.get("ZOHO_SMTP_PASSWORD")
+    zoho_use_ssl = (os.environ.get("ZOHO_SMTP_SSL", "false").strip().lower() == "true")
+    zoho_from = os.environ.get("EMAIL_FROM") or zoho_username
+
+    if email_provider in {"zoho", "zoho_smtp"} or (not resend_api_key and zoho_username and zoho_password):
+        if not zoho_username or not zoho_password:
+            app.logger.warning("Zoho is not configured: missing ZOHO_SMTP_USERNAME/ZOHO_SMTP_PASSWORD for %s", recipient_email)
+            return False
+        if not zoho_from:
+            app.logger.warning("Zoho is not configured: missing EMAIL_FROM or ZOHO_SMTP_USERNAME for %s", recipient_email)
+            return False
+
+        app.logger.info("Attempting email via Zoho SMTP for %s", recipient_email)
+        message = EmailMessage()
+        message["Subject"] = subject
+        message["From"] = zoho_from
+        message["To"] = recipient_email
+        message.set_content(body)
+        try:
+            if zoho_use_ssl:
+                with smtplib.SMTP_SSL(zoho_host, zoho_port, timeout=10) as server:
+                    server.login(zoho_username, zoho_password)
+                    server.send_message(message)
+            else:
+                with smtplib.SMTP(zoho_host, zoho_port, timeout=10) as server:
+                    server.starttls()
+                    server.login(zoho_username, zoho_password)
+                    server.send_message(message)
+            app.logger.info("Email sent via Zoho SMTP to %s", recipient_email)
+            return True
+        except Exception as exc:
+            app.logger.warning("Failed to send email through Zoho SMTP to %s: %s", recipient_email, exc)
+            return False
 
     if not resend_api_key:
         app.logger.warning("Resend is not configured: missing RESEND_API_KEY for %s", recipient_email)
