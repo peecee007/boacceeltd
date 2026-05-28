@@ -1,24 +1,33 @@
-app = "app-billowing-fog-9826"
-primary_region = "iad"
+# fly.toml app configuration file generated for bocceeltd on 2026-05-28T18:40:27-04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'app-billowing-fog-9826'
+primary_region = 'iad'
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = 'Dockerfile'
 
 [env]
-  PORT = "5000"
+  PORT = '5000'
 
 [http_service]
   internal_port = 5000
   force_https = true
-  auto_stop_machines = false
+  auto_stop_machines = 'off'
   auto_start_machines = true
   min_machines_running = 1
-  processes = ["app"]
+  processes = ['app']
 
-[checks]
-  [checks.healthz]
-    grace_period = "10s"
-    interval = "15s"
-    method = "GET"
-    timeout = "2s"
-    path = "/healthz"
+  [[http_service.checks]]
+    interval = '15s'
+    timeout = '2s'
+    grace_period = '10s'
+    method = 'GET'
+    path = '/healthz'
+
+[[vm]]
+  memory = '1gb'
+  cpus = 1
+  memory_mb = 1024
