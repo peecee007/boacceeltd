@@ -181,16 +181,12 @@ SERVICE_CONTENT = {
                 "bullets_zh": [
                     "(Central and Eastern Europe) Limited.",
                     "Address: Jozsef Nador ter 7. 1051 Budapest, Hungary",
-                    "Tel: 0036-14299200",
                     "Email: cs@bocceeltd.vip",
-                    "Branches",
                 ],
                 "bullets_en": [
                     "(Central and Eastern Europe) Limited.",
                     "Address: Jozsef Nador ter 7. 1051 Budapest, Hungary",
-                    "Tel: 0036-14299200",
                     "Email: cs@bocceeltd.vip",
-                    "Branches",
                 ],
             },
             {
@@ -208,13 +204,11 @@ SERVICE_CONTENT = {
                     "Name: Bank of China (CEE) Ltd. Vienna Branch",
                     "Address: Börseplatz 6, A-1010 Vienna, Austria",
                     "SWIFT CODE: BKCHATWWXXX",
-                    "Telephone Number: 0043-153666800",
                 ],
                 "bullets_en": [
                     "Name: Bank of China (CEE) Ltd. Vienna Branch",
                     "Address: Börseplatz 6, A-1010 Vienna, Austria",
                     "SWIFT CODE: BKCHATWWXXX",
-                    "Telephone Number: 0043-153666800",
                 ],
             },
             {
