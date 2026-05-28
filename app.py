@@ -71,8 +71,8 @@ SERVICE_CONTENT = {
                 "endpoint": "personal_saving_account",
                 "title_zh": "Personal Saving Account",
                 "title_en": "Personal Saving Account",
-                "description_zh": "View currencies, minimum balances, identity-document requirements, and paper or fax instruction guidance for individual current accounts.",
-                "description_en": "View currencies, minimum balances, identity-document requirements, and paper or fax instruction guidance for individual current accounts.",
+                "description_zh": "View currencies, minimum balances, identity-document requirements, and paper instruction guidance for individual current accounts.",
+                "description_en": "View currencies, minimum balances, identity-document requirements, and paper instruction guidance for individual current accounts.",
             }
         ],
     },
@@ -99,7 +99,7 @@ SERVICE_CONTENT = {
         "intro_zh": "参考客户服务栏目，提供常见问题、联系渠道、通知提醒与合规文件入口。",
         "intro_en": "Based on the customer service area, this page provides FAQs, contact channels, notifications, and compliance entry points.",
         "items_zh": ["客服热线", "登录提醒通知", "KYC 文件上传", "交易记录导出", "管理后台支持"],
-        "items_en": ["Support hotline", "Login notifications", "KYC document upload", "Transaction export", "Admin support controls"],
+        "items_en": ["Support contact", "Login notifications", "KYC document upload", "Transaction export", "Admin support controls"],
     },
     "about_us": {
         "title_zh": "关于我们",
@@ -107,7 +107,7 @@ SERVICE_CONTENT = {
         "intro_zh": "参考关于我们栏目，介绍本平台的中东欧服务定位、个人与企业业务能力以及管理功能。",
         "intro_en": "Inspired by the About Us section, this page introduces the platform's Central and Eastern Europe positioning, personal and corporate capabilities, and management features.",
         "items_zh": ["平台简介", "个人与企业开户", "国际汇款与转账流程", "安全与合规功能", "管理员运营后台"],
-        "items_en": ["BOC news", "Bank outline and service map", "Regulations and complaints handling", "Financial reports and consumer protection", "Corporate social responsibility and hotline"],
+        "items_en": ["BOC news", "Bank outline and service map", "Regulations and complaints handling", "Financial reports and consumer protection", "Corporate social responsibility and support"],
         "sections": [
             {
                 "title_zh": "BOC News",
@@ -182,19 +182,15 @@ SERVICE_CONTENT = {
                     "(Central and Eastern Europe) Limited.",
                     "Address: Jozsef Nador ter 7. 1051 Budapest, Hungary",
                     "Tel: 0036-14299200",
-                    "Fax: 0036-14299202",
                     "Email: cs@bocceeltd.vip",
                     "Branches",
-                    "Hotline: 0036-14299252",
                 ],
                 "bullets_en": [
                     "(Central and Eastern Europe) Limited.",
                     "Address: Jozsef Nador ter 7. 1051 Budapest, Hungary",
                     "Tel: 0036-14299200",
-                    "Fax: 0036-14299202",
                     "Email: cs@bocceeltd.vip",
                     "Branches",
-                    "Hotline: 0036-14299252",
                 ],
             },
             {
@@ -213,14 +209,12 @@ SERVICE_CONTENT = {
                     "Address: Börseplatz 6, A-1010 Vienna, Austria",
                     "SWIFT CODE: BKCHATWWXXX",
                     "Telephone Number: 0043-153666800",
-                    "Fax Number: 0043-153666888",
                 ],
                 "bullets_en": [
                     "Name: Bank of China (CEE) Ltd. Vienna Branch",
                     "Address: Börseplatz 6, A-1010 Vienna, Austria",
                     "SWIFT CODE: BKCHATWWXXX",
                     "Telephone Number: 0043-153666800",
-                    "Fax Number: 0043-153666888",
                 ],
             },
             {
@@ -231,14 +225,12 @@ SERVICE_CONTENT = {
                     "Disclosure Report of Bank of China (CEE) Ltd. - 2024",
                     "Consumer Rights Protection",
                     "Information About Online Fraud / Online Csalassal Kapcsolatos Informaciok",
-                    "Hotline: 0036-14299252",
                 ],
                 "bullets_en": [
                     "Bank of China (CEE) Ltd. Financial Statements - 2024 (English/Hungarian)",
                     "Disclosure Report of Bank of China (CEE) Ltd. - 2024",
                     "Consumer Rights Protection",
                     "Information About Online Fraud / Online Csalassal Kapcsolatos Informaciok",
-                    "Hotline: 0036-14299252",
                 ],
             },
         ],
@@ -248,8 +240,8 @@ SERVICE_CONTENT = {
         "title_en": "Personal Saving Account",
         "intro_zh": "Individual customers can open current accounts in HUF, USD, EUR and CNY with the bank. The minimum balances are 10,000 HUF, 100 USD, 100 EUR and 1,000 CNY respectively.",
         "intro_en": "Individual customers can open current accounts in HUF, USD, EUR and CNY with the bank. The minimum balances are 10,000 HUF, 100 USD, 100 EUR and 1,000 CNY respectively.",
-        "items_zh": ["Currencies and minimum balances", "No passbook", "Cash deposit and withdrawal", "Identity documents", "Paper and fax instructions"],
-        "items_en": ["Currencies and minimum balances", "No passbook", "Cash deposit and withdrawal", "Identity documents", "Paper and fax instructions"],
+        "items_zh": ["Currencies and minimum balances", "No passbook", "Cash deposit and withdrawal", "Identity documents", "Paper instructions"],
+        "items_en": ["Currencies and minimum balances", "No passbook", "Cash deposit and withdrawal", "Identity documents", "Paper instructions"],
         "sections": [
             {
                 "title_zh": "Account Overview",
@@ -282,26 +274,22 @@ SERVICE_CONTENT = {
                 "title_en": "Identity Documents",
                 "paragraphs_zh": [
                     "For the first current account with the bank, customers need to go to the bank counters in person with valid identity documents such as Hungarian ID card, passport, driver's license and address card, or a foreign passport with valid visa.",
-                    "If customers want to open an account in another currency, the account holder can apply at the counters in person or send an application by fax if he or she has already signed a fax business contract with the bank.",
+                    "If customers want to open an account in another currency, the account holder can apply at the counters in person.",
                 ],
                 "paragraphs_en": [
                     "For the first current account with the bank, customers need to go to the bank counters in person with valid identity documents such as Hungarian ID card, passport, driver's license and address card, or a foreign passport with valid visa.",
-                    "If customers want to open an account in another currency, the account holder can apply at the counters in person or send an application by fax if he or she has already signed a fax business contract with the bank.",
+                    "If customers want to open an account in another currency, the account holder can apply at the counters in person.",
                 ],
             },
             {
-                "title_zh": "Instructions and Hotline",
-                "title_en": "Instructions and Hotline",
+                "title_zh": "Instructions",
+                "title_en": "Instructions",
                 "paragraphs_zh": [
                     "For paper-based transfer instructions, the account holder or the authorized person of the account can submit them at the counters of the bank in person.",
-                    "The account holder can also send a fax instruction if he or she has already signed a fax business contract with the bank.",
                 ],
                 "paragraphs_en": [
                     "For paper-based transfer instructions, the account holder or the authorized person of the account can submit them at the counters of the bank in person.",
-                    "The account holder can also send a fax instruction if he or she has already signed a fax business contract with the bank.",
                 ],
-                "footer_zh": "Hotline: 0036-14299252",
-                "footer_en": "Hotline: 0036-14299252",
             },
         ],
     },

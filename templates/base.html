@@ -126,7 +126,6 @@ a{color:#8b0000;text-decoration:none;}a:hover{color:#c40000;}
         <a class="lang-pill {% if current_lang == 'en' %}active{% endif %}" href="{{ url_for('set_language', lang='en', next=request.full_path) }}">English</a>
       </div>
       <div class="auth-links">
-        <span>{{ tr('客服热线', 'Hotline') }}: <strong>0036-14299252</strong></span>
         {% if session.user_id %}
           <a class="btn btn-light" href="{{ url_for('dashboard') }}">{{ tr('账户中心', 'Dashboard') }}</a>
           <a class="btn btn-light" href="{{ url_for('logout') }}">{{ tr('退出', 'Logout') }}</a>
