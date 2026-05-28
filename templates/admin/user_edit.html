@@ -16,10 +16,7 @@
       <div class="form-group"><label>{{ tr('账户类型', 'Account Type') }}</label><select name="account_type"><option value="personal" {{ 'selected' if user.account_type == 'personal' }}>{{ tr('个人账户', 'Personal') }}</option><option value="corporate" {{ 'selected' if user.account_type == 'corporate' }}>{{ tr('企业账户', 'Corporate') }}</option></select></div>
       <div class="form-group"><label>{{ tr('主币种', 'Primary Currency') }}</label><select name="currency">{% for currency in currencies %}<option value="{{ currency }}" {{ 'selected' if user.currency == currency }}>{{ currency }}</option>{% endfor %}</select></div>
     </div>
-    <div class="form-grid">
-      <div class="form-group"><label>{{ tr('每日转账限额', 'Daily Transfer Limit') }}</label><input type="number" step="0.01" name="daily_transfer_limit" value="{{ user.daily_transfer_limit or 5000 }}"/></div>
-      <div class="form-group"><label>{{ tr('新密码（留空则不修改）', 'New Password (leave blank to keep current)') }}</label><input type="password" name="new_password"/></div>
-    </div>
+    <div class="form-group"><label>{{ tr('新密码（留空则不修改）', 'New Password (leave blank to keep current)') }}</label><input type="password" name="new_password"/></div>
     {% if can('assign_roles') %}
     {% if user.staff_role == 'super_admin' %}
     <div class="form-group">

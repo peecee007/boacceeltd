@@ -24,7 +24,6 @@
       <tr><th>{{ tr('账户类型', 'Account Type') }}</th><td>{{ user.account_type }}</td></tr>
       <tr><th>{{ tr('角色', 'Role') }}</th><td>{{ staff_role_label(account=user) if user.is_admin else tr('客户', 'Customer') }}</td></tr>
       <tr><th>{{ tr('主币种', 'Primary Currency') }}</th><td>{{ user.currency }}</td></tr>
-      <tr><th>{{ tr('每日转账限额', 'Daily Transfer Limit') }}</th><td>{{ "{:,.2f}".format(user.daily_transfer_limit or 0) }} {{ user.currency }}</td></tr>
       <tr><th>{{ tr('推荐码', 'Referral Code') }}</th><td>{{ user.referral_code }}</td></tr>
       <tr><th>{{ tr('KYC 状态', 'KYC Status') }}</th><td>{{ user.kyc_status }}</td></tr>
     </table>

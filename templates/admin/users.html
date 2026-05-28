@@ -41,7 +41,6 @@
         <th>{{ tr('角色', 'Role') }}</th>
         <th>{{ tr('主币种', 'Currency') }}</th>
         <th>{{ tr('状态', 'Status') }}</th>
-        <th>{{ tr('每日限额', 'Daily Limit') }}</th>
         <th>{{ tr('操作', 'Actions') }}</th>
       </tr>
     </thead>
@@ -59,7 +58,6 @@
             {% if u.is_admin %}<span class="badge badge-blue">{{ tr('员工', 'Staff') }}</span>{% endif %}
           </div>
         </td>
-        <td>{{ "{:,.2f}".format(u.daily_transfer_limit or 0) }} {{ u.currency }}</td>
         <td>
           <div class="table-actions">
             <a class="btn btn-light" href="{{ url_for('admin_user_detail', uid=u.id) }}">{{ tr('查看', 'View') }}</a>

@@ -9,7 +9,6 @@
       <div class="form-group"><label>{{ tr('主币种', 'Primary Currency') }}</label><select name="currency">{% for currency in currencies %}<option value="{{ currency }}" {{ 'selected' if user.currency == currency }}>{{ currency }}</option>{% endfor %}</select></div>
     </div>
     <div class="form-group"><label>{{ tr('通知与邮件', 'Notifications and Emails') }}</label><div class="muted">{{ tr('系统会自动将欢迎信、登录提醒、交易回执和账户更新发送到您的注册邮箱。', 'Welcome emails, login alerts, receipts, and account updates are automatically sent to your registered email address.') }}</div></div>
-    <div class="form-group"><label>{{ tr('每日转账限额（只读）', 'Daily Transfer Limit (read only)') }}</label><input type="text" value="{{ "{:,.2f}".format(user.daily_transfer_limit) }} {{ user.currency }}" readonly/></div>
     <button type="submit" class="btn btn-primary">{{ tr('保存设置', 'Save Settings') }}</button>
   </form>
   <form method="POST" action="{{ url_for('send_test_email') }}" style="margin-top:12px;">

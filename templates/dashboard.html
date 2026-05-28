@@ -4,7 +4,7 @@
 <section class="hero" style="grid-template-columns:1fr;">
   <div class="hero-banner">
     <h1>{{ tr('欢迎', 'Welcome') }} {{ user.full_name }}</h1>
-    <p>{{ tr('您的主账户为', 'Your primary account is') }} {{ user.account_no }} · {{ user.currency }}. {{ tr('今日已转账', 'Transferred today') }} {{ "{:,.2f}".format(transfer_total_today) }} {{ user.currency }} / {{ "{:,.2f}".format(user.daily_transfer_limit) }} {{ user.currency }}.</p>
+    <p>{{ tr('您的主账户为', 'Your primary account is') }} {{ user.account_no }} · {{ user.currency }}. {{ tr('今日已转账', 'Transferred today') }} {{ "{:,.2f}".format(transfer_total_today) }} {{ user.currency }}.</p>
     <div class="hero-actions">
       <a class="btn btn-light" href="{{ url_for('transfer_funds') }}">{{ tr('账户转账', 'Transfer Funds') }}</a>
       <a class="btn btn-light" href="{{ url_for('international_remittance') }}">{{ tr('国际汇款', 'International Remittance') }}</a>
@@ -17,7 +17,6 @@
 
 <section class="dashboard-grid">
   <div class="stat-card"><h3>{{ tr('主账户余额', 'Primary Balance') }}</h3><div style="font-size:26px;font-weight:700;">{{ "{:,.2f}".format(user.balance) }} {{ user.currency }}</div></div>
-  <div class="stat-card"><h3>{{ tr('今日剩余转账额度', 'Daily Transfer Limit Left') }}</h3><div style="font-size:22px;font-weight:700;">{{ "{:,.2f}".format(transfer_limit_left) }} {{ user.currency }}</div></div>
   <div class="stat-card"><h3>{{ tr('2FA / PIN', '2FA / PIN') }}</h3><div style="font-size:22px;font-weight:700;">{{ tr('已启用', '2FA On') if user.two_factor_enabled else tr('未启用', '2FA Off') }} · {{ tr('已设置 PIN', 'PIN Set') if user.transaction_pin_hash else tr('未设置 PIN', 'PIN Missing') }}</div></div>
 </section>
 

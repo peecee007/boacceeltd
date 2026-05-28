@@ -425,7 +425,6 @@ class User(db.Model):
     kyc_status = db.Column(db.String(20), default="not_submitted")
     staff_role   = db.Column(db.String(20), default="customer")
     transaction_pin_hash = db.Column(db.String(256), default="")
-    daily_transfer_limit = db.Column(db.Float, default=5000.0)
     referral_code = db.Column(db.String(32), unique=True)
     referred_by_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     virtual_card_no = db.Column(db.String(32), default="")
@@ -854,9 +853,6 @@ def ensure_user_defaults(user):
         user.virtual_card_expiry = expiry
         user.virtual_card_cvv = cvv
         changed = True
-    if not user.daily_transfer_limit or user.daily_transfer_limit <= 0:
-        user.daily_transfer_limit = 5000.0
-        changed = True
     return changed
 
 
@@ -1272,7 +1268,6 @@ LEGACY_SCHEMA_UPDATES = {
         ("kyc_status", "VARCHAR(20) DEFAULT 'not_submitted'"),
         ("staff_role", "VARCHAR(20) DEFAULT 'customer'"),
         ("transaction_pin_hash", "VARCHAR(256) DEFAULT ''"),
-        ("daily_transfer_limit", "DOUBLE PRECISION DEFAULT 5000"),
         ("referral_code", "VARCHAR(32)"),
         ("referred_by_id", "INTEGER"),
         ("virtual_card_no", "VARCHAR(32) DEFAULT ''"),
@@ -1666,7 +1661,6 @@ def dashboard():
     referral_link = url_for("register", ref=user.referral_code, _external=True)
     rates = get_reference_rates()
     transfer_total_today = get_today_transfer_total(user)
-    transfer_limit_left = max(user.daily_transfer_limit - transfer_total_today, 0.0)
     return render_template(
         "dashboard.html",
         user=user,
@@ -1679,7 +1673,6 @@ def dashboard():
         exchange_updated_at=get_exchange_updated_at(),
         referral_link=referral_link,
         transfer_total_today=transfer_total_today,
-        transfer_limit_left=transfer_limit_left,
         loan_schedules=loan_schedules,
         activity_logs=activity_logs,
         support_messages=support_messages,
@@ -1777,8 +1770,6 @@ def export_transactions_pdf():
 def transfer_funds():
     user = User.query.get_or_404(session["user_id"])
     wallets = CurrencyBalance.query.filter_by(user_id=user.id).order_by(CurrencyBalance.currency.asc()).all()
-    transfer_total_today = get_today_transfer_total(user)
-    limit_left = max(user.daily_transfer_limit - transfer_total_today, 0.0)
     if request.method == "POST":
         amount = float(request.form.get("amount", 0) or 0)
         currency = request.form.get("currency", user.currency).strip().upper()
@@ -1788,26 +1779,23 @@ def transfer_funds():
         transaction_pin = request.form.get("transaction_pin", "").strip()
         if amount <= 0 or currency not in CURRENCIES or not beneficiary_name or not beneficiary_account:
             flash(tr("请填写完整的转账信息。", "Please complete the transfer form."), "error")
-            return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=False, transfer_total_today=transfer_total_today, limit_left=limit_left)
+            return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=False)
         if not user.transaction_pin_hash:
             flash(tr("请先在安全中心设置交易 PIN。", "Please set your transaction PIN in the security center first."), "error")
             return redirect(url_for("security"))
         if not user.check_transaction_pin(transaction_pin):
             flash(tr("交易 PIN 错误。", "Invalid transaction PIN."), "error")
-            return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=False, transfer_total_today=transfer_total_today, limit_left=limit_left)
+            return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=False)
         converted_amount, _ = convert_amount(amount, currency, user.currency)
-        if converted_amount > limit_left:
-            flash(tr("超出今日转账限额。", "This transfer exceeds your remaining daily limit."), "error")
-            return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=False, transfer_total_today=transfer_total_today, limit_left=limit_left)
         wallet = get_or_create_currency_balance(user, currency)
         if wallet.amount < amount:
             flash(tr("余额不足。", "Insufficient balance."), "error")
-            return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=False, transfer_total_today=transfer_total_today, limit_left=limit_left)
+            return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=False)
         internal_recipient = User.query.filter_by(account_no=beneficiary_account, is_admin=False).first()
         if internal_recipient:
             if internal_recipient.id == user.id:
                 flash(tr("不能向自己的账户转账。", "You cannot transfer to your own account."), "error")
-                return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=False, transfer_total_today=transfer_total_today, limit_left=limit_left)
+                return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=False)
             reference_no = execute_internal_transfer(user, internal_recipient, amount, currency, description, "local_transfer")
             db.session.commit()
             return render_transfer_success(
@@ -1826,9 +1814,9 @@ def transfer_funds():
             currency,
             beneficiary_name,
             txn.reference_no,
-            tr("申请已提交，等待审核", "Request submitted and awaiting review"),
-        )
-    return render_template("transfer_funds.html", user=user, wallets=wallets, form={}, remittance=False, transfer_total_today=transfer_total_today, limit_left=limit_left)
+                tr("申请已提交，等待审核", "Request submitted and awaiting review"),
+            )
+    return render_template("transfer_funds.html", user=user, wallets=wallets, form={}, remittance=False)
 
 
 @app.route("/international-remittance", methods=["GET", "POST"])
@@ -1836,8 +1824,6 @@ def transfer_funds():
 def international_remittance():
     user = User.query.get_or_404(session["user_id"])
     wallets = CurrencyBalance.query.filter_by(user_id=user.id).order_by(CurrencyBalance.currency.asc()).all()
-    transfer_total_today = get_today_transfer_total(user)
-    limit_left = max(user.daily_transfer_limit - transfer_total_today, 0.0)
     if request.method == "POST":
         amount = float(request.form.get("amount", 0) or 0)
         currency = request.form.get("currency", user.currency).strip().upper()
@@ -1850,17 +1836,13 @@ def international_remittance():
         transaction_pin = request.form.get("transaction_pin", "").strip()
         if amount <= 0 or currency not in CURRENCIES or not all([beneficiary_name, beneficiary_account, destination_bank, destination_country, swift_code]):
             flash(tr("请填写完整的国际汇款信息。", "Please complete the international remittance form."), "error")
-            return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=True, transfer_total_today=transfer_total_today, limit_left=limit_left)
+            return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=True)
         if not user.transaction_pin_hash:
             flash(tr("请先在安全中心设置交易 PIN。", "Please set your transaction PIN in the security center first."), "error")
             return redirect(url_for("security"))
         if not user.check_transaction_pin(transaction_pin):
             flash(tr("交易 PIN 错误。", "Invalid transaction PIN."), "error")
-            return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=True, transfer_total_today=transfer_total_today, limit_left=limit_left)
-        converted_amount, _ = convert_amount(amount, currency, user.currency)
-        if converted_amount > limit_left:
-            flash(tr("超出今日转账限额。", "This remittance exceeds your remaining daily limit."), "error")
-            return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=True, transfer_total_today=transfer_total_today, limit_left=limit_left)
+            return render_template("transfer_funds.html", user=user, wallets=wallets, form=request.form, remittance=True)
         txn = submit_transfer_request(user, amount, currency, description, "international_remittance", beneficiary_name, beneficiary_account, destination_bank, destination_country, swift_code)
         db.session.commit()
         return render_transfer_success(
@@ -1868,10 +1850,10 @@ def international_remittance():
             amount,
             currency,
             beneficiary_name,
-            txn.reference_no,
-            tr("申请已提交，等待审核", "Request submitted and awaiting review"),
+                txn.reference_no,
+                tr("申请已提交，等待审核", "Request submitted and awaiting review"),
         )
-    return render_template("transfer_funds.html", user=user, wallets=wallets, form={}, remittance=True, transfer_total_today=transfer_total_today, limit_left=limit_left)
+    return render_template("transfer_funds.html", user=user, wallets=wallets, form={}, remittance=True)
 
 
 @app.route("/wallet/convert", methods=["POST"])
@@ -2084,11 +2066,6 @@ def admin_user_edit(uid):
         if user.staff_role == "super_admin":
             is_admin = True
             staff_role = "super_admin"
-        try:
-            daily_transfer_limit = float(request.form.get("daily_transfer_limit", user.daily_transfer_limit or 5000) or 0)
-        except ValueError:
-            flash(tr("每日转账限额必须是数字。", "Daily transfer limit must be numeric."), "error")
-            return render_template("admin/user_edit.html", user=user)
         if not full_name:
             flash(tr("姓名不能为空。", "Full name is required."), "error")
             return render_template("admin/user_edit.html", user=user)
@@ -2104,9 +2081,6 @@ def admin_user_edit(uid):
             return render_template("admin/user_edit.html", user=user)
         if currency not in CURRENCIES:
             flash(tr("请选择有效币种。", "Choose a valid currency."), "error")
-            return render_template("admin/user_edit.html", user=user)
-        if daily_transfer_limit <= 0:
-            flash(tr("每日转账限额必须大于 0。", "Daily transfer limit must be greater than 0."), "error")
             return render_template("admin/user_edit.html", user=user)
         if staff_role not in {"customer", "support", "manager", "super_admin"}:
             flash(tr("员工角色无效。", "Invalid staff role."), "error")
@@ -2132,7 +2106,6 @@ def admin_user_edit(uid):
         user.account_type = account_type
         user.currency = currency
         user.notes = notes
-        user.daily_transfer_limit = daily_transfer_limit
         if user.staff_role == "super_admin":
             user.is_admin = True
             user.staff_role = "super_admin"
@@ -2278,9 +2251,8 @@ def admin_create_user():
 
         try:
             balance = float(request.form.get("balance", 0) or 0)
-            daily_transfer_limit = float(request.form.get("daily_transfer_limit", 5000) or 0)
         except ValueError:
-            flash(tr("开户余额和每日限额必须是数字。", "Opening balance and daily limit must be valid numbers."), "error")
+            flash(tr("开户余额必须是数字。", "Opening balance must be a valid number."), "error")
             return render_template("admin/create_user.html", form=request.form)
 
         if not full_name:
@@ -2301,9 +2273,6 @@ def admin_create_user():
         if balance < 0:
             flash(tr("开户余额不能为负数。", "Opening balance cannot be negative."), "error")
             return render_template("admin/create_user.html", form=request.form)
-        if daily_transfer_limit <= 0:
-            flash(tr("每日转账限额必须大于 0。", "Daily transfer limit must be greater than 0."), "error")
-            return render_template("admin/create_user.html", form=request.form)
         if staff_role not in {"customer", "support", "manager", "super_admin"}:
             flash(tr("员工角色无效。", "Invalid staff role."), "error")
             return render_template("admin/create_user.html", form=request.form)
@@ -2322,8 +2291,7 @@ def admin_create_user():
                  account_no=gen_account_no(), phone=phone, address=address,
                  balance=balance, currency=currency, preferred_lang=preferred_lang if preferred_lang in LANGUAGES else "zh",
                  is_admin=is_admin if has_permission(actor, "assign_roles") else False,
-                 staff_role=staff_role if is_admin and has_permission(actor, "assign_roles") and staff_role in {"manager", "support"} else "customer",
-                 daily_transfer_limit=daily_transfer_limit)
+                 staff_role=staff_role if is_admin and has_permission(actor, "assign_roles") and staff_role in {"manager", "support"} else "customer")
         u.set_password(password)
         db.session.add(u)
         db.session.flush()
