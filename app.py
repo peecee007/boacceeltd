@@ -20,6 +20,7 @@ import os, random, string, secrets, smtplib
 import pyotp
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
+from email_template import build_login_email_html
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
@@ -727,7 +728,7 @@ def create_notification(user_id, subject_zh, subject_en, message_zh, message_en,
     ))
 
 
-def send_email_message(recipient_email, subject, body):
+def send_email_message(recipient_email, subject, body, html_body=None):
     email_provider = (os.environ.get("EMAIL_PROVIDER") or "").strip().lower()
     resend_api_key = os.environ.get("RESEND_API_KEY")
     resend_from = os.environ.get("EMAIL_FROM") or os.environ.get("RESEND_FROM_EMAIL")
@@ -752,6 +753,8 @@ def send_email_message(recipient_email, subject, body):
         message["From"] = zoho_from
         message["To"] = recipient_email
         message.set_content(body)
+        if html_body:
+            message.add_alternative(html_body, subtype="html")
         try:
             if zoho_use_ssl:
                 with smtplib.SMTP_SSL(zoho_host, zoho_port, timeout=10) as server:
@@ -778,12 +781,15 @@ def send_email_message(recipient_email, subject, body):
     app.logger.info("Attempting email via Resend for %s", recipient_email)
     resend.api_key = resend_api_key
     try:
-        response = resend.Emails.send({
+        payload = {
             "from": resend_from,
             "to": [recipient_email],
             "subject": subject,
             "text": body,
-        })
+        }
+        if html_body:
+            payload["html"] = html_body
+        response = resend.Emails.send(payload)
         app.logger.info("Email sent via Resend to %s: %s", recipient_email, response)
         return True
     except Exception as exc:
@@ -801,6 +807,21 @@ def send_email_notification(user, subject_zh, subject_en, body_zh, body_en, kind
     subject = user_text(user, subject_zh, subject_en)
     body = user_text(user, body_zh, body_en)
     return send_email_message(user.email, subject, body)
+
+
+def send_login_email(user, ip_address):
+    subject = "Security Notice: New Login to Your Boacceeltd Account"
+    text_body = (
+        f"Dear {user.full_name},\n\n"
+        "We detected a new login to your Boacceeltd Online Banking account.\n"
+        f"Date and time: {datetime.utcnow().strftime('%d %B %Y at %H:%M:%S UTC')}\n"
+        f"IP address: {ip_address}\n"
+        f"Account number: {user.account_no}\n"
+        f"Account type: {user.account_type} Banking\n\n"
+        "If this was not you, change your password immediately."
+    )
+    html_body = build_login_email_html(user, ip_address, datetime.utcnow())
+    return send_email_message(user.email, subject, text_body, html_body=html_body)
 
 
 def log_login_attempt(user, ip_address, success):
@@ -1079,10 +1100,10 @@ def execute_internal_transfer(sender, recipient, amount, currency, description, 
     )
     send_email_notification(
         sender,
-        "Transfer sent",
-        "Transfer sent",
-        f"You successfully sent {amount:,.2f} {currency} to {recipient.full_name}. Reference: {reference_no}.",
-        f"You successfully sent {amount:,.2f} {currency} to {recipient.full_name}. Reference: {reference_no}.",
+        "Transfer successful",
+        "Transfer successful",
+        f"Your transfer of {amount:,.2f} {currency} to {recipient.full_name} was successful. Reference: {reference_no}.",
+        f"Your transfer of {amount:,.2f} {currency} to {recipient.full_name} was successful. Reference: {reference_no}.",
         "transfer",
     )
     send_email_notification(
@@ -1182,13 +1203,15 @@ def complete_login(user, ip_address):
     session["lang"] = user.preferred_lang or "zh"
     user.last_login = datetime.utcnow()
     log_login_attempt(user, ip_address, True)
-    send_email_notification(
-        user,
+    create_notification(
+        user.id,
         "Login notification",
         "Login notification",
         f"Your account {user.email} has just signed in. If this was not you, please change your password immediately.",
         f"Your account {user.email} has just signed in. If this was not you, please change your password immediately.",
+        "login",
     )
+    send_login_email(user, ip_address)
     db.session.commit()
 
 
@@ -2323,6 +2346,15 @@ def admin_review_transaction(txn_id):
             return redirect(url_for("admin_transactions"))
         apply_approved_transaction(txn)
         send_email_notification(txn.user, "交易申请已批准", "Transaction request approved", f"您的交易 {txn.reference_no or txn.id} 已批准。", f"Your transaction {txn.reference_no or txn.id} has been approved.", "transfer")
+        send_email_message(
+            txn.user.email,
+            "Transfer completed",
+            (
+                f"Your transfer {txn.reference_no or txn.id} has been completed successfully.\n"
+                f"Amount: {txn.amount:,.2f} {txn.currency}\n"
+                f"Status: Completed"
+            ),
+        )
     else:
         send_email_notification(txn.user, "交易申请被拒绝", "Transaction request rejected", f"您的交易 {txn.reference_no or txn.id} 被拒绝。", f"Your transaction {txn.reference_no or txn.id} has been rejected.", "transfer")
     db.session.commit()
